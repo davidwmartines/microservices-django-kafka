@@ -1,0 +1,22 @@
+version: '3.7'
+
+services:
+
+  person-service-web:
+    build: ./person-service
+    env_file:
+      - ./person-service/.env
+    command:
+      [
+        "gunicorn",
+        "--bind",
+        "0.0.0.0:8001",
+        "--reload",
+        "service.wsgi"
+      ]
+    volumes:
+     - ./person-service:/code
+    ports:
+      - "8001:8001"
+    environment:
+      - DJANGO_READ_DOT_ENV_FILE=true
