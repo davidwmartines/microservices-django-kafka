@@ -15,4 +15,6 @@ ENV PATH /venv/bin:/bin:/usr/bin:/usr/local/bin
 
 COPY . /code/
 
+WORKDIR /code
+
 CMD ["gunicorn", "service.wsgi"]

@@ -2,9 +2,13 @@
 build:
     sudo docker-compose build
 
-#start
-start:
+# start up
+up:
     sudo docker-compose up
+
+# shut down
+down:
+    sudo docker-compose down
 
 # shell into a person service
 person-service-shell:

@@ -1,6 +1,5 @@
 version: '3.7'
 
-
 volumes:
   postgres_data:
 
@@ -9,13 +8,31 @@ services:
 
   postgres:
     image: postgres:15
-
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
-
     volumes:
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
       - postgres_data:/var/lib/postgresql/data/
 
+  person-service-migrate:
+    build: ./person-service
+    env_file:
+      - ./person-service/.env
+    volumes:
+      - ./wait-for-it.sh:/code/wait-for-it.sh
+    command:
+      [
+        "./wait-for-it.sh",
+        "postgres:5432",
+        "--",
+        "./manage.py",
+        "migrate",
+        "--noinput"
+      ]
+    depends_on:
+      - postgres
+    environment:
+      - DJANGO_READ_DOT_ENV_FILE=true
 
   person-service-web:
     build: ./person-service
@@ -30,9 +47,9 @@ services:
         "service.wsgi"
       ]
     volumes:
-     - ./person-service:/code
+      - ./person-service:/code
     depends_on:
-      - postgres
+      - person-service-migrate
     ports:
       - "8001:8001"
     environment:
