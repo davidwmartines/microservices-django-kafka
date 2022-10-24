@@ -1,6 +1,21 @@
 version: '3.7'
 
+
+volumes:
+  postgres_data:
+
+
 services:
+
+  postgres:
+    image: postgres:15
+
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
 
   person-service-web:
     build: ./person-service
@@ -16,6 +31,8 @@ services:
       ]
     volumes:
      - ./person-service:/code
+    depends_on:
+      - postgres
     ports:
       - "8001:8001"
     environment:
