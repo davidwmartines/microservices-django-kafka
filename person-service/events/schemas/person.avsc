@@ -1,0 +1,37 @@
+{
+  "namespace": "microservices.django.kafka.poc.avro",
+  "name": "Person",
+  "type": "record",
+  "doc": "Represents the state of a person entity in the system.",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "name": "created",
+      "type": "string",
+      "logicalType": "timestamp",
+      "default": ""
+    },
+    {
+      "name": "modified",
+      "type": "string",
+      "logicalType": "timestamp",
+      "default": ""
+    },
+    {
+      "name": "first_name",
+      "type": "string"
+    },
+    {
+      "name": "last_name",
+      "type": "string"
+    },
+    {
+      "name": "date_of_birth",
+      "type": "string",
+      "logicalType": "date"
+    }
+  ]
+}
