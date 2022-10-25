@@ -17,3 +17,7 @@ person-service-shell:
 # psql into the postgres service container
 psql:
     sudo docker container exec -it microservices-django-kafka_postgres_1 psql -U postgres
+
+# take ownership of all the files, such as those created by docker
+own:
+    sudo chown -R $USER .
