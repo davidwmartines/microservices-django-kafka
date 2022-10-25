@@ -1,8 +1,7 @@
-from datetime import datetime
 from uuid import uuid4
 
-from django.utils import timezone
 from django.db import transaction
+from django.utils import timezone
 
 from events.models import Event
 from events.serializers import EventSerializer
