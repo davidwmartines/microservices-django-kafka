@@ -14,6 +14,42 @@ services:
       - ./postgres/init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
       - postgres_data:/var/lib/postgresql/data/
 
+  zookeeper:
+    image: bitnami/zookeeper:3.7.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ALLOW_ANONYMOUS_LOGIN: 'yes'
+    ports:
+      - 22181:2181
+    
+  kafka:
+    image: bitnami/kafka:2.8.0
+    depends_on:
+      - zookeeper
+    ports:
+      - 29092:29092
+    environment:
+      ALLOW_PLAINTEXT_LISTENER: 'yes'
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CFG_LOG_CLEANER_MAX_COMPACTION_LAG_MS: 180000
+      KAFKA_CFG_LOG_CLEANER_MIN_CLEANABLE_RATIO: 0.1
+      KAFKA_CFG_LOG_SEGMENT_BYTES: 100000
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:6.2.0
+    hostname: schema-registry
+    depends_on:
+      - kafka
+    ports:
+      - "8081:8081"
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'kafka:9092'
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+      SCHEMA_REGISTRY_SCHEMA_COMPATIBILITY_LEVEL: forward
+
+
   person-service-migrate:
     build: ./person-service
     env_file:
