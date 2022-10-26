@@ -12,7 +12,24 @@ services:
       - POSTGRES_HOST_AUTH_METHOD=trust
     volumes:
       - ./postgres/init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
+      - ./postgres/pg_hba.conf:/etc/postgresql/pg_hba.conf
       - postgres_data:/var/lib/postgresql/data/
+    command:
+      - "postgres"
+      - "-c"
+      - "wal_level=logical"
+      - "-c"
+      - "max_connections=300"
+      - "-c"
+      - "max_wal_senders=4"
+      - "-c"
+      - "max_replication_slots=4"
+      # - "-c"
+      # - "log_error_verbosity=VERBOSE"
+      # - "-c"
+      # - "log_statement=all"
+      - "-c"
+      - "hba_file=/etc/postgresql/pg_hba.conf"
 
   zookeeper:
     image: bitnami/zookeeper:3.7.0
@@ -59,6 +76,8 @@ services:
       - "8088:8088"
     env_file:
       - ./ksqldb/.env
+    volumes:
+      - ./ksqldb/migrations:/migrations
 
   person-service-migrate:
     build: ./person-service
