@@ -76,13 +76,15 @@ services:
       ]
     depends_on:
       - postgres
-    environment:
-      - DJANGO_READ_DOT_ENV_FILE=true
 
   person-service-web:
     build: ./person-service
     env_file:
       - ./person-service/.env
+    volumes:
+      - ./person-service:/code
+    ports:
+      - "8001:8001"
     command:
       [
         "gunicorn",
@@ -91,11 +93,5 @@ services:
         "--reload",
         "service.wsgi"
       ]
-    volumes:
-      - ./person-service:/code
     depends_on:
       - person-service-migrate
-    ports:
-      - "8001:8001"
-    environment:
-      - DJANGO_READ_DOT_ENV_FILE=true
