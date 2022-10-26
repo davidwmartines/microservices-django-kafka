@@ -13,7 +13,7 @@ def demo_date_of_birth():
 @save_event(
     Config(
         schema="person.avsc",
-        topic="person",
+        topic="outbox.event.Person",
         to_dict=lambda o, ctx: dict(
             id=str(o.id),
             first_name=o.first_name,

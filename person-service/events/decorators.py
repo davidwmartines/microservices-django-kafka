@@ -23,11 +23,11 @@ def save_event(config: Config):
             super(self.__class__, self).save(*args, **kwargs)
             event.save()
 
-    def decorator_publish(cls):
+    def decorator_save_event(cls):
         cls.save = save
         return cls
 
-    return decorator_publish
+    return decorator_save_event
 
 
 _serializers = {}
