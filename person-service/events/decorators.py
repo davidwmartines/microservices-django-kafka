@@ -15,6 +15,15 @@ def save_event(config: Config):
     """
 
     def save(self, *args, **kwargs):
+        # Note, the event and outbox item is created before the transaction begins.
+        # This is so that the serialization is not happening during the db transactions.
+        # The serialization process may need to make an API call to Schema-Registry on the
+        # first invocation to get/register the schema, and we don't want that IO to be blocking
+        # the transaction.
+        # The downside is that we don't have access to the model fields that are generated
+        # at save time such as as created and modified.
+        # If the serialization could be optimized to not require any IO, the creation of the
+        # event and outbox item could be moved inside the transaction, after saving the model.
         outbox_item = _create_outbox_item(self, config)
         with transaction.atomic():
             super(self.__class__, self).save(*args, **kwargs)
