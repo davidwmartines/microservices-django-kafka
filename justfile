@@ -12,7 +12,11 @@ down:
 
 # shell into a person service container
 shell-person:
-    sudo docker-compose run --rm -w /code person-service-web bash
+    sudo docker-compose run --rm person-service-web bash
+
+# shell into a person service container
+shell-planning:
+    sudo docker-compose run --rm planning-service-web bash
 
 # psql into the postgres service container
 psql:
