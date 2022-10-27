@@ -117,6 +117,24 @@ services:
       - person-service-migrate
 
 
+  planning-service-migrate:
+    build: ./planning-service
+    env_file:
+      - ./planning-service/.env
+    volumes:
+      - ./wait-for-it.sh:/code/wait-for-it.sh
+    command:
+      [
+        "./wait-for-it.sh",
+        "postgres:5432",
+        "--",
+        "./manage.py",
+        "migrate",
+        "--noinput"
+      ]
+    depends_on:
+      - postgres
+
   planning-service-web:
     build: ./planning-service
     env_file:
@@ -134,4 +152,4 @@ services:
         "service.wsgi"
       ]
     depends_on:
-      - postgres
+      - planning-service-migrate
