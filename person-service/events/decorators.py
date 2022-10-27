@@ -1,5 +1,3 @@
-from uuid import uuid4
-
 from django.db import transaction
 
 from events.models import OutboxItem
@@ -39,16 +37,7 @@ def _create_outbox_item(model: object, config: Config) -> OutboxItem:
         _serializers[config.schema] = serializer
 
     event = create_event("entity.saved", config.to_dict(model))
-    payload = serializer(event)
 
-    item = OutboxItem(
-        id=uuid4(),
-        aggregatetype=model.__class__.__name__,
-        aggregateid=model.pk,
-        timestamp=event.time,
-        event_type=event.event_type,
-        source=event.source,
-        content_type="application/avro",
-        payload=payload,
+    return OutboxItem.from_event(
+        event, topic=config.topic, key=model.pk, serializer=serializer
     )
-    return item
