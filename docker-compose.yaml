@@ -115,3 +115,23 @@ services:
       ]
     depends_on:
       - person-service-migrate
+
+
+  planning-service-web:
+    build: ./planning-service
+    env_file:
+      - ./planning-service/.env
+    volumes:
+      - ./planning-service:/code
+    ports:
+      - "8003:8003"
+    command:
+      [
+        "gunicorn",
+        "--bind",
+        "0.0.0.0:8003",
+        "--reload",
+        "service.wsgi"
+      ]
+    depends_on:
+      - postgres
