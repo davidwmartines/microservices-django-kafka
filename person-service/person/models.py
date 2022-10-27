@@ -23,6 +23,12 @@ def demo_date_of_birth():
     )
 )
 class Person(TimeStampedModel):
+    """
+    Represents a human known to the Person Service.
+    The Person Service is considered the authoritative
+    system of record for Person data in the microservices
+    ecosystem.
+    """
     id = models.UUIDField(primary_key=True, default=uuid4)
     first_name = models.CharField(max_length=50, default="")
     last_name = models.CharField(max_length=50, default="")
