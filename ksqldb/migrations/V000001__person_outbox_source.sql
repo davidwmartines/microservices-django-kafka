@@ -8,8 +8,9 @@ CREATE SOURCE CONNECTOR person_outbox_source WITH (
     'database.dbname' = 'person', 
     'database.server.name' = 'person-service',
     'table.include.list' = 'public.events_event',
-    'table.field.event.time-stamp' = 'timestamp',
+    'table.field.event.timestamp' = 'timestamp',
     'transforms' = 'outbox',
     'transforms.outbox.type' = 'io.debezium.transforms.outbox.EventRouter',
+    'transforms.outbox.table.fields.additional.placement' = 'id:header:ce_id,timestamp:header:ce_time,event_type:header:ce_type,source:header:ce_source,content_type:header:content-type',
     'value.converter' = 'io.debezium.converters.ByteBufferConverter'
 );
