@@ -30,7 +30,7 @@ class Config(NamedTuple):
 
 
 @dataclass
-class EventEnvelope:
+class Event:
     id: UUID
     source: str
     event_type: str
@@ -39,8 +39,8 @@ class EventEnvelope:
     specversion: str = "1.0"
 
 
-def create_event(event_type: str, data: dict) -> EventEnvelope:
-    return EventEnvelope(
+def create_event(event_type: str, data: dict) -> Event:
+    return Event(
         id=uuid4(),
         source=settings.EVENT_SOURCE_NAME,
         event_type=event_type,

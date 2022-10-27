@@ -8,7 +8,7 @@ from confluent_kafka.schema_registry.avro import AvroSerializer
 import os
 
 from django.conf import settings
-from . import Config, EventEnvelope
+from . import Config, Event
 
 
 class EventSerializer:
@@ -35,7 +35,7 @@ class EventSerializer:
             ),
         )
 
-    def __call__(self, event: EventEnvelope) -> Any:
+    def __call__(self, event: Event) -> Any:
         return self.avro_serializer(
             event, SerializationContext(self.config.topic, MessageField.VALUE)
         )
