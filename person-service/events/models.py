@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class Event(models.Model):
+class OutboxItem(models.Model):
     id = models.UUIDField(primary_key=True)
     aggregatetype = models.CharField(max_length=255, null=False)
     aggregateid = models.CharField(max_length=255, null=False)

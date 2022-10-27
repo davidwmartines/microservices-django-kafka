@@ -43,7 +43,7 @@ def create_event(event_type: str, data: dict) -> EventEnvelope:
     return EventEnvelope(
         id=uuid4(),
         source=settings.EVENT_SOURCE_NAME,
-        event_type="entity.saved",
+        event_type=event_type,
         time=timezone.now(),
         data=data,
     )

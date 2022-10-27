@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from django.db import transaction
 
-from events.models import Event
+from events.models import OutboxItem
 from events.serializers import EventSerializer
 
 from . import Config, create_event
@@ -17,10 +17,10 @@ def save_event(config: Config):
     """
 
     def save(self, *args, **kwargs):
-        outbox_event = _create_outbox_event(self, config)
+        outbox_item = _create_outbox_item(self, config)
         with transaction.atomic():
             super(self.__class__, self).save(*args, **kwargs)
-            outbox_event.save()
+            outbox_item.save()
 
     def decorator_save_event(cls):
         cls.save = save
@@ -32,7 +32,7 @@ def save_event(config: Config):
 _serializers = {}
 
 
-def _create_outbox_event(model: object, config: Config) -> Event:
+def _create_outbox_item(model: object, config: Config) -> OutboxItem:
     serializer = _serializers.get(config.schema)
     if not serializer:
         serializer = EventSerializer(config)
@@ -41,7 +41,7 @@ def _create_outbox_event(model: object, config: Config) -> Event:
     event = create_event("entity.saved", config.to_dict(model))
     payload = serializer(event)
 
-    outbox_event = Event(
+    item = OutboxItem(
         id=uuid4(),
         aggregatetype=model.__class__.__name__,
         aggregateid=model.pk,
@@ -51,4 +51,4 @@ def _create_outbox_event(model: object, config: Config) -> Event:
         content_type="application/avro",
         payload=payload,
     )
-    return outbox_event
+    return item
