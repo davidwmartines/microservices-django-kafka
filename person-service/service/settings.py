@@ -135,3 +135,4 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 SCHEMA_REGISTRY_URL = env("SCHEMA_REGISTRY_URL")
+EVENT_SOURCE_NAME = "person-service"

@@ -1,12 +1,11 @@
 from uuid import uuid4
 
 from django.db import transaction
-from django.utils import timezone
 
 from events.models import Event
 from events.serializers import EventSerializer
 
-from . import Config
+from . import Config, create_event
 
 
 def save_event(config: Config):
@@ -18,10 +17,10 @@ def save_event(config: Config):
     """
 
     def save(self, *args, **kwargs):
-        event = _create_event(self, config)
+        outbox_event = _create_outbox_event(self, config)
         with transaction.atomic():
             super(self.__class__, self).save(*args, **kwargs)
-            event.save()
+            outbox_event.save()
 
     def decorator_save_event(cls):
         cls.save = save
@@ -33,19 +32,23 @@ def save_event(config: Config):
 _serializers = {}
 
 
-def _create_event(obj: object, config: Config) -> Event:
+def _create_outbox_event(model: object, config: Config) -> Event:
     serializer = _serializers.get(config.schema)
     if not serializer:
         serializer = EventSerializer(config)
         _serializers[config.schema] = serializer
 
-    payload = serializer(obj)
+    event = create_event("entity.saved", config.to_dict(model))
+    payload = serializer(event)
 
-    return Event(
+    outbox_event = Event(
         id=uuid4(),
-        aggregatetype=obj.__class__.__name__,
-        aggregateid=obj.pk,
-        timestamp=timezone.now(),
-        type="save",
+        aggregatetype=model.__class__.__name__,
+        aggregateid=model.pk,
+        timestamp=event.time,
+        event_type=event.event_type,
+        source=event.source,
+        content_type="application/avro",
         payload=payload,
     )
+    return outbox_event

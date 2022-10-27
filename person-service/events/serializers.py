@@ -8,7 +8,7 @@ from confluent_kafka.schema_registry.avro import AvroSerializer
 import os
 
 from django.conf import settings
-from . import Config
+from . import Config, EventEnvelope
 
 
 class EventSerializer:
@@ -23,10 +23,19 @@ class EventSerializer:
         # create schema registry client and avro serializer
         registry_client = SchemaRegistryClient({"url": settings.SCHEMA_REGISTRY_URL})
         self.avro_serializer = AvroSerializer(
-            registry_client, schema_string, self.config.to_dict
+            registry_client,
+            schema_string,
+            to_dict=lambda event, ctx: dict(
+                id=str(event.id),
+                type=event.event_type,
+                source=event.source,
+                specversion=event.specversion,
+                time=event.time.isoformat(),
+                data=event.data,
+            ),
         )
 
-    def __call__(self, obj: object) -> Any:
+    def __call__(self, event: EventEnvelope) -> Any:
         return self.avro_serializer(
-            obj, SerializationContext(self.config.topic, MessageField.VALUE)
+            event, SerializationContext(self.config.topic, MessageField.VALUE)
         )

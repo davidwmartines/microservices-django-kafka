@@ -14,7 +14,7 @@ def demo_date_of_birth():
     Config(
         schema="person.avsc",
         topic="outbox.event.Person",
-        to_dict=lambda o, ctx: dict(
+        to_dict=lambda o: dict(
             id=str(o.id),
             first_name=o.first_name,
             last_name=o.last_name,
