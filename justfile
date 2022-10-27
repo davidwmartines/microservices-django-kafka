@@ -29,3 +29,7 @@ schema-registry:
 # take ownership of all the files, such as those created by docker
 own:
     sudo chown -R $USER .
+
+# start a console consumer on a topic
+consume topic:
+    sudo docker run -it --network microservices-django-kafka_default edenhill/kcat:1.7.0 -b kafka:9092 -C -t {{topic}} -f 'Topic %t [%p] at offset %o: key %k: headers %h: %s\n'
