@@ -14,20 +14,34 @@ logger = logging.getLogger(__name__)
 @click.option("--topic")
 @click.option("--consumer_group_id")
 @click.option("--handler")
-def command(topic, consumer_group_id, handler):
+@click.option("--allow_errors", is_flag=True, default=False)
+def command(topic, consumer_group_id, handler, allow_errors):
 
     logger.info("Starting consumer")
 
-    handler_func = import_string(handler)()
+    auto_commit = False
+
+    if allow_errors:
+        logger.warning(
+            "RUNNING IN ALLOW_ERRORS MODE!  Not all events are guaranteed to be handled succesfully, but offsets will be comitted.  Any handler errors will be logged."
+        )
+        auto_commit = True
+
+    handler_class = import_string(handler)
     logger.info(f"imported handler {handler}")
+
+    handler_instance = handler_class()
+    logger.debug(f"instantiated handler {handler}")
 
     consumer = Consumer(
         {
             "bootstrap.servers": settings.KAFKA_BOOTSTRAP_SERVERS,
             "group.id": consumer_group_id,
             "auto.offset.reset": "earliest",
+            "enable.auto.commit": auto_commit,
         }
     )
+
     logger.info(f"subscribing to topic {topic}")
     consumer.subscribe([topic])
 
@@ -41,4 +55,17 @@ def command(topic, consumer_group_id, handler):
             continue
         else:
             logger.debug("dispatching message to handler")
-            handler_func(msg)
+            try:
+                handler_instance(msg)
+            except Exception as ex:
+                if allow_errors:
+                    logger.error(
+                        f"Exception handling message from partition {msg.partition()}, offset: {msg.offset()}.  Headers: {msg.headers()} {str(ex)}",
+                        exc_info=str(ex),
+                    )
+                else:
+                    raise ex
+
+            if not auto_commit:
+                consumer.commit(msg)
+                logger.debug(f"Committed message at offset {msg.offset()}")
