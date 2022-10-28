@@ -1,11 +1,9 @@
-import djclick as click
 import logging
 
-
+import djclick as click
 from confluent_kafka import Consumer
-from django.utils.module_loading import import_string
-
 from django.conf import settings
+from django.utils.module_loading import import_string
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +13,8 @@ logger = logging.getLogger(__name__)
 @click.option("--consumer_group_id")
 @click.option("--handler")
 @click.option("--allow_errors", is_flag=True, default=False)
-def command(topic, consumer_group_id, handler, allow_errors):
+@click.option("--initial_offset", default=0)
+def command(topic, consumer_group_id, handler, allow_errors, initial_offset):
 
     logger.info("Starting consumer")
 
@@ -45,6 +44,18 @@ def command(topic, consumer_group_id, handler, allow_errors):
     logger.info(f"subscribing to topic {topic}")
     consumer.subscribe([topic])
 
+    if initial_offset:
+        logger.info(f"Seeking to offset {initial_offset}")
+
+        # poll once to get assigments
+        consumer.poll(1.0)
+
+        # seek to the specified offset:
+        # TODO: seek based on partition:offset
+        for topic_partition in consumer.assignment():
+            topic_partition.offset = initial_offset
+            consumer.seek(topic_partition)
+
     while True:
         msg = consumer.poll(1.0)
         if msg is None:
@@ -58,12 +69,11 @@ def command(topic, consumer_group_id, handler, allow_errors):
             try:
                 handler_instance(msg)
             except Exception as ex:
-                if allow_errors:
-                    logger.error(
-                        f"Exception handling message from partition {msg.partition()}, offset: {msg.offset()}.  Headers: {msg.headers()} {str(ex)}",
-                        exc_info=str(ex),
-                    )
-                else:
+                logger.error(
+                    f"Exception handling message from partition {msg.partition()}, offset: {msg.offset()}.  Headers: {msg.headers()} {str(ex)}",
+                    exc_info=str(ex),
+                )
+                if not allow_errors:
                     raise ex
 
             if not auto_commit:
