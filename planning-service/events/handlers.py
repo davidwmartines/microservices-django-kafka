@@ -1,3 +1,4 @@
+import logging
 import os
 from abc import ABC, abstractmethod, abstractproperty
 
@@ -8,8 +9,6 @@ from confluent_kafka.serialization import MessageField, SerializationContext
 from django.conf import settings
 
 from events import Event, dict_to_event
-
-import logging
 
 logger = logging.getLogger(__name__)
 

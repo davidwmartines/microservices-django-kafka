@@ -1,12 +1,10 @@
+import logging
 from datetime import datetime
 from uuid import UUID
 
 from events import Event
 from events.handlers import EventHandler
-
 from planning.models import Person
-
-import logging
 
 logger = logging.getLogger(__name__)
 
