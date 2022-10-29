@@ -15,8 +15,8 @@ def save_event(config: Config):
     """
 
     def save(self, *args, **kwargs):
-        # Note, the event and outbox item is created before the transaction begins.
-        # This is so that the serialization is not happening during the db transactions.
+        # Note, the event and outbox item are created before the transaction begins.
+        # This is so that the serialization is not happening during the db transaction.
         # The serialization process may need to make an API call to Schema-Registry on the
         # first invocation to get/register the schema, and we don't want that IO to be blocking
         # the transaction.
