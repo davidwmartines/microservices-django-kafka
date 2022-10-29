@@ -1,6 +1,6 @@
 import logging
 import os
-from abc import ABC, abstractmethod, abstractproperty
+from abc import ABC, abstractmethod
 
 from confluent_kafka import Message
 from confluent_kafka.schema_registry import SchemaRegistryClient
@@ -14,7 +14,8 @@ logger = logging.getLogger(__name__)
 
 
 class EventHandler(ABC):
-    @abstractproperty
+
+    @abstractmethod
     def schema_file_name(self) -> str:
         raise NotImplementedError()
 
