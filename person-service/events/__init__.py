@@ -23,6 +23,11 @@ class Config(NamedTuple):
     The topic name (subject) the schema will be registred to.
     """
 
+    event_type: str
+    """
+    The type of event to generate.
+    """
+
     to_dict: Callable[[object], dict]
     """
     Function that takes a model and returns a dictionary

@@ -45,7 +45,7 @@ def _create_outbox_item(model: object, config: Config) -> OutboxItem:
         serializer = EventSerializer(config)
         _serializers[config.schema] = serializer
 
-    event = create_event("entity.saved", config.to_dict(model))
+    event = create_event(config.event_type, config.to_dict(model))
 
     return OutboxItem.from_event(
         event, topic=config.topic, key=model.pk, serializer=serializer
