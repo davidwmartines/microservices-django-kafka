@@ -153,3 +153,41 @@ services:
       ]
     depends_on:
       - planning-service-migrate
+
+  accounting-service-web:
+    build: ./accounting-service
+    env_file:
+      - ./accounting-service/.env
+    volumes:
+      - ./accounting-service:/code
+    ports:
+      - "8002:8002"
+    command:
+      [
+        "gunicorn",
+        "--bind",
+        "0.0.0.0:8002",
+        "--reload",
+        "service.wsgi"
+      ]
+    depends_on:
+      - accounting-service-migrate
+
+  accounting-service-migrate:
+    build: ./accounting-service
+    env_file:
+      - ./accounting-service/.env
+    volumes:
+      - ./wait-for-it.sh:/code/wait-for-it.sh
+    command:
+      [
+        "./wait-for-it.sh",
+        "postgres:5432",
+        "--",
+        "./manage.py",
+        "migrate",
+        "--noinput"
+      ]
+    depends_on:
+      - postgres
+

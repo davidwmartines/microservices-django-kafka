@@ -18,6 +18,10 @@ shell-person:
 shell-planning:
     sudo docker-compose run --rm planning-service-web bash
 
+# shell into an accounting service container
+shell-accounting:
+    sudo docker-compose run --rm accounting-service-web bash
+
 # psql into the postgres service container
 psql:
     sudo docker container exec -it microservices-django-kafka_postgres_1 psql -U postgres
