@@ -6,7 +6,7 @@ class Person(models.Model):
     Represents a human known to the Planning Service.
     Person data comes from the microservice ecosystem
     via the person entity state stream.  The person data
-    in this service is not considered authortative and
+    in this service is not considered authoritative and
     is not managed here.
     """
 
