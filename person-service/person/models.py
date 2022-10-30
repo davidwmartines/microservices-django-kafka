@@ -36,6 +36,3 @@ class Person(TimeStampedModel):
     date_of_birth = models.DateTimeField(
         null=True, blank=True, default=demo_date_of_birth
     )
-
-    def __str__(self):
-        return f"{self.last_name}, {self.first_name} | {self.id}"
