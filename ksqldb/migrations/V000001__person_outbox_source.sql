@@ -7,6 +7,7 @@ CREATE SOURCE CONNECTOR person_outbox_source WITH (
     'database.password' = '', 
     'database.dbname' = 'person', 
     'database.server.name' = 'person-service',
+    'slot.name' = 'person_service_debezium',
     'table.include.list' = 'public.events_outboxitem',
     'transforms' = 'outbox',
     'transforms.outbox.type' = 'io.debezium.transforms.outbox.EventRouter',
