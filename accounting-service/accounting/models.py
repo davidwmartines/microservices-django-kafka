@@ -15,7 +15,7 @@ class BalanceSheet(models.Model):
     """
 
     id = models.UUIDField(primary_key=True, default=uuid4)
-    person_id = models.UUIDField(null=False, unique_for_date="date_calculated")
+    person_id = models.UUIDField(null=False)
     date_calculated = models.DateTimeField(null=False, default=datetime.utcnow)
     assets = models.BigIntegerField(null=False, default=0)
     liabilities = models.BigIntegerField(null=False, default=0)
