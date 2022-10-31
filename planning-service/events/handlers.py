@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 
 class EventHandler(ABC):
-
     @abstractmethod
     def schema_file_name(self) -> str:
         raise NotImplementedError()
@@ -25,8 +24,11 @@ class EventHandler(ABC):
 
     def __init__(self) -> None:
 
-        path = os.path.realpath(os.path.dirname(__file__))
-        with open(f"{path}/schemas/{self.schema_file_name()}") as f:
+        with open(
+            os.path.join(
+                settings.BASE_DIR, settings.EVENTS_SCHEMAS_DIR, self.schema_file_name()
+            )
+        ) as f:
             schema_string = f.read()
 
         schema_registry_client = SchemaRegistryClient(
