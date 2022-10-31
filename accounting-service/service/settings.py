@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import envparse
+import logging
+import sys
 
 from pathlib import Path
 
@@ -43,6 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "accounting",
+    "events",
 ]
 
 MIDDLEWARE = [
@@ -133,6 +136,44 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "[%(asctime)s] %(levelname)s %(message)s (%(name)s)",
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": env("LOG_LEVEL", default="INFO"),
+            "class": "logging.StreamHandler",
+            "stream": sys.stdout,
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        "": {
+            "handlers": ["console"],
+            "level": env("LOG_LEVEL", default="INFO"),
+            "propagate": True,
+        },
+    },
+}
+
 SESSION_COOKIE_NAME = "accounting-service"
 
 SCHEMA_REGISTRY_URL = env("SCHEMA_REGISTRY_URL")
+
+KAFKA_BOOTSTRAP_SERVERS = env("KAFKA_BOOTSTRAP_SERVERS")
+
+EVENTS_SCHEMAS_DIR = "events/schemas"
+
+KAFKA_TOPIC_CONFIGS = [
+    {
+        "name": "public_balance_sheet_entity_events",
+        "schema": "balance_sheet.avsc",
+        "partitions": 4,
+        "replication_factor": 1,
+    }
+]
