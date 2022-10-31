@@ -1,3 +1,11 @@
+/*
+This creates a source connector for producing events to Kafka
+from the OutboxItem table in the person service.
+Since the events are already serialized according to the canonical
+schema for person entity events, the events are produced directly
+to the public topic.
+*/
+
 CREATE SOURCE CONNECTOR person_outbox_source WITH (
     'connector.class' = 'io.debezium.connector.postgresql.PostgresConnector', 
     'plugin.name' = 'pgoutput',

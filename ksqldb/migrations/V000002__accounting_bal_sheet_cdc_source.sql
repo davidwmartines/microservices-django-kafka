@@ -1,3 +1,13 @@
+/*
+This creates a source connector for producing change-data-capture events
+from the BalanceSheet table in the accounting service.
+Note that the schema of the events is exactly based on the source-table
+schema.  For that reason, these events are produced to a private topic
+owned by the service.  For public use of these events, KSQL stream processing
+will translate the events to the canonical schema and produce new messages
+to a public topic.
+*/
+
 CREATE SOURCE CONNECTOR balance_sheet_source WITH (
     'connector.class' = 'io.debezium.connector.postgresql.PostgresConnector', 
     'plugin.name' = 'pgoutput',
