@@ -5,12 +5,15 @@ and producing new messages into the public topic for other services
 to consume.
 The schema created in the projection must be compatible with the
 canonical schema for balance sheet events.
+The schema must already be registered for the subject (topic), and
+the VALUE_SCHEMA_ID references the desired version (default: 1).
 */
 
 CREATE STREAM accounting_bal_sheet_output
 WITH (
     KAFKA_TOPIC = 'public_balance_sheet_entity_events',
-    VALUE_FORMAT = 'avro'
+    VALUE_FORMAT = 'avro',
+    VALUE_SCHEMA_ID = 1
 ) AS
     SELECT
         '1.0' AS `specversion`,
