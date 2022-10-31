@@ -77,7 +77,7 @@ services:
     env_file:
       - ./ksqldb/.env
     volumes:
-      - ./ksqldb/migrations:/migrations
+      - ./ksqldb/project:/project
 
   person-service-migrate:
     build: ./person-service
