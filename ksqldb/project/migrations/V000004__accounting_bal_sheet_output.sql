@@ -7,6 +7,8 @@ The schema created in the projection must be compatible with the
 canonical schema for balance sheet events.
 The schema must already be registered for the subject (topic), and
 the VALUE_SCHEMA_ID references the desired version (default: 1).
+
+NOTE THIS IS NOT WORKING YET, probably because of https://github.com/confluentinc/ksql/issues/8919
 */
 
 SET 'auto.offset.reset' = 'earliest';
