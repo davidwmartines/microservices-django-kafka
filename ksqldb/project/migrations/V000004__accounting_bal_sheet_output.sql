@@ -9,9 +9,12 @@ The schema must already be registered for the subject (topic), and
 the VALUE_SCHEMA_ID references the desired version (default: 1).
 */
 
+SET 'auto.offset.reset' = 'earliest';
+
 CREATE STREAM accounting_bal_sheet_output
 WITH (
     KAFKA_TOPIC = 'public_balance_sheet_entity_events',
+    PARTITIONS = 4,
     VALUE_FORMAT = 'avro',
     VALUE_SCHEMA_ID = 1
 ) AS
@@ -20,7 +23,6 @@ WITH (
         UUID() as `id`,
         'balance_sheet_calculated' as `type`,
         'accounting-service' as `source`,
-        `key` as `subject`,
         DATE_CALCULATED as `time`,
         STRUCT(
             `id` := ID,
@@ -28,7 +30,8 @@ WITH (
             `date_calculated` := DATE_CALCULATED,
             `assets` := ASSETS,
             `liabilities` := LIABILITIES
-        ) AS `data`
+        ) AS `data`,
+        `key`
     FROM
         accounting_bal_sheet_input
     EMIT CHANGES;
