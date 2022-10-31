@@ -138,3 +138,4 @@ SESSION_COOKIE_NAME = "person-service"
 
 SCHEMA_REGISTRY_URL = env("SCHEMA_REGISTRY_URL")
 EVENT_SOURCE_NAME = "person-service"
+EVENTS_SCHEMAS_DIR = "events/schemas"

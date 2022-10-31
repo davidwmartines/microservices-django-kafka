@@ -16,8 +16,9 @@ class EventSerializer:
         self.config = config
 
         # load the schema string from the referenced schema file
-        path = os.path.realpath(os.path.dirname(__file__))
-        with open(f"{path}/schemas/{config.schema}") as f:
+        with open(
+            os.path.join(settings.BASE_DIR, settings.EVENTS_SCHEMAS_DIR, config.schema)
+        ) as f:
             schema_string = f.read()
 
         # create schema registry client and avro serializer
