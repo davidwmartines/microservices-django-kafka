@@ -39,7 +39,7 @@ services:
       ALLOW_ANONYMOUS_LOGIN: 'yes'
     ports:
       - 22181:2181
-    
+
   kafka:
     image: bitnami/kafka:3.3.1
     depends_on:
@@ -79,20 +79,21 @@ services:
     volumes:
       - ./ksqldb/project:/project
 
-  person-service-migrate:
-    build: ./person-service
+  accounting-service-web:
+    build: ./accounting-service
     env_file:
-      - ./person-service/.env
+      - ./accounting-service/.env
     volumes:
-      - ./wait-for-it.sh:/code/wait-for-it.sh
+      - ./accounting-service:/code
+    ports:
+      - "8002:8002"
     command:
       [
-        "./wait-for-it.sh",
-        "postgres:5432",
-        "--",
-        "./manage.py",
-        "migrate",
-        "--noinput"
+        "gunicorn",
+        "--bind",
+        "0.0.0.0:8002",
+        "--reload",
+        "service.wsgi"
       ]
     depends_on:
       - postgres
@@ -114,25 +115,6 @@ services:
         "service.wsgi"
       ]
     depends_on:
-      - person-service-migrate
-
-
-  planning-service-migrate:
-    build: ./planning-service
-    env_file:
-      - ./planning-service/.env
-    volumes:
-      - ./wait-for-it.sh:/code/wait-for-it.sh
-    command:
-      [
-        "./wait-for-it.sh",
-        "postgres:5432",
-        "--",
-        "./manage.py",
-        "migrate",
-        "--noinput"
-      ]
-    depends_on:
       - postgres
 
   planning-service-web:
@@ -152,42 +134,52 @@ services:
         "service.wsgi"
       ]
     depends_on:
-      - planning-service-migrate
+      - postgres
 
-  accounting-service-web:
-    build: ./accounting-service
+  planning-service-person-consumer:
+    build: ./planning-service
     env_file:
-      - ./accounting-service/.env
-    volumes:
-      - ./accounting-service:/code
-    ports:
-      - "8002:8002"
-    command:
-      [
-        "gunicorn",
-        "--bind",
-        "0.0.0.0:8002",
-        "--reload",
-        "service.wsgi"
-      ]
-    depends_on:
-      - accounting-service-migrate
-
-  accounting-service-migrate:
-    build: ./accounting-service
-    env_file:
-      - ./accounting-service/.env
+      - ./planning-service/.env
     volumes:
       - ./wait-for-it.sh:/code/wait-for-it.sh
     command:
       [
         "./wait-for-it.sh",
-        "postgres:5432",
+        "schema-registry:8081",
         "--",
         "./manage.py",
-        "migrate",
-        "--noinput"
+        "consume_events",
+        "--topic",
+        "public_person_entity_events",
+        "--consumer_group_id",
+        "planning-consumer-1",
+        "--handler",
+        "planning.handlers.PersonEventHandler"
       ]
     depends_on:
+      - schema-registry
       - postgres
 
+  planning-service-balance-sheet-consumer:
+    build: ./planning-service
+    env_file:
+      - ./planning-service/.env
+    volumes:
+      - ./wait-for-it.sh:/code/wait-for-it.sh
+    command:
+      [
+        "./wait-for-it.sh",
+        "schema-registry:8081",
+        "--",
+        "./manage.py",
+        "consume_events",
+        "--topic",
+        "public_balance_sheet_entity_events",
+        "--consumer_group_id",
+        "planning-consumer-2",
+        "--handler",
+        "planning.handlers.BalanceSheetEventHandler"
+      ]
+    depends_on:
+      - schema-registry
+      - postgres
