@@ -23,7 +23,7 @@ def parse_date(val: str) -> datetime:
     Python serialized datetimes are isoformatted.
     KSQL serialized have the Z at the end.
     """
-    return datetime.fromisoformat(str(val).replace("Z", ""))
+    return datetime.fromisoformat(str(val).replace("Z", "+00:00"))
 
 
 def dict_to_event(val: dict, *args) -> Event:
