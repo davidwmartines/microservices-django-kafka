@@ -14,32 +14,60 @@ logger = logging.getLogger(__name__)
 
 
 class EventHandler(ABC):
-    @abstractmethod
-    def schema_file_name(self) -> str:
-        raise NotImplementedError()
+    """
+    Base class for handlers of Avro-serialized, CloudEvents-spec compliant event messages from Kafka.
+
+    EventHandler instances are Callable.
+    """
+
+    schema_file_name: str = None
+    """
+    Allows using an explicit reader-schema for deserialization
+    by specifying the file name of an avro schema.
+    If None, the writer-schema of the incoming message will be
+    used for deserialization.
+    """
 
     @abstractmethod
     def handle(self, event: Event) -> None:
+        """
+        Template method for subclasses to perform their handling of specific event types.
+
+        Arguments:
+            event (Event): a deserialized Event instance.  Handlers will typically use the `data` field
+            to access the event-type sepcific payload.
+        """
         raise NotImplementedError()
 
     def __init__(self) -> None:
 
-        with open(
-            os.path.join(
-                settings.BASE_DIR, settings.EVENTS_SCHEMAS_DIR, self.schema_file_name()
-            )
-        ) as f:
-            schema_string = f.read()
+        schema_string = None
+
+        if self.schema_file_name:
+            with open(
+                os.path.join(
+                    settings.BASE_DIR,
+                    settings.EVENTS_SCHEMAS_DIR,
+                    self.schema_file_name,
+                )
+            ) as f:
+                schema_string = f.read()
 
         schema_registry_client = SchemaRegistryClient(
             {"url": settings.SCHEMA_REGISTRY_URL}
         )
 
         self.deserializer = AvroDeserializer(
-            schema_registry_client, schema_string, dict_to_event
+            schema_registry_client, schema_str=schema_string, from_dict=dict_to_event
         )
 
     def __call__(self, message: Message) -> None:
+        """
+        Callable interface.
+
+        Arguments:
+            message (Message): a Kafka Client message instance.
+        """
         logger.debug(
             f"handling message key {message.key().decode()} topic {message.topic()}"
         )

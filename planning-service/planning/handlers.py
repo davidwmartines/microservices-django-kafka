@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 class PersonEventHandler(EventHandler):
-    def schema_file_name(self) -> str:
-        return "person.avsc"
+
+    schema_file_name = "person.avsc"
 
     def handle(self, event: Event) -> None:
 
@@ -30,9 +30,6 @@ class PersonEventHandler(EventHandler):
 
 
 class BalanceSheetEventHandler(EventHandler):
-    def schema_file_name(self) -> str:
-        return "balance_sheet.avsc"
-
     def handle(self, event: Event) -> None:
         data = event.data
 
@@ -53,4 +50,6 @@ class BalanceSheetEventHandler(EventHandler):
                 "liabilities": int(data["liabilities"]),
             },
         )
-        logger.info(f"persisted balance sheet {obj.id} for person {person_id}. created: {created}")
+        logger.info(
+            f"persisted balance sheet {obj.id} for person {person_id}. created: {created}"
+        )
