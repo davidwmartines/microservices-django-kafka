@@ -3,7 +3,6 @@ version: '3.7'
 volumes:
   postgres_data:
 
-
 services:
 
   postgres:
@@ -97,6 +96,8 @@ services:
       ]
     depends_on:
       - postgres
+    restart: always
+
 
   person-service-web:
     build: ./person-service
@@ -116,6 +117,7 @@ services:
       ]
     depends_on:
       - postgres
+    restart: always
 
   planning-service-web:
     build: ./planning-service
@@ -135,6 +137,7 @@ services:
       ]
     depends_on:
       - postgres
+    restart: always
 
   planning-service-person-consumer:
     build: ./planning-service
@@ -159,6 +162,7 @@ services:
     depends_on:
       - schema-registry
       - postgres
+    restart: always
 
   planning-service-balance-sheet-consumer:
     build: ./planning-service
@@ -183,3 +187,4 @@ services:
     depends_on:
       - schema-registry
       - postgres
+    restart: always
