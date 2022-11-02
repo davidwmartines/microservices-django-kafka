@@ -17,6 +17,8 @@ def command():
     """
     This command can be used to pre-create topics and register schemas,
     in cases where this is needed.
+
+    Note - maybe not needed, since outbox connectors can create the topics.
     """
 
     topic_configs = settings.KAFKA_TOPIC_CONFIGS
