@@ -26,11 +26,6 @@
       "doc": "Identifies the context in which an event happened.  Can be the name of the producing service."
     },
     {
-      "name": "subject",
-      "type": "string",
-      "doc": "This describes the subject of the event in the context of the event producer.  This is typically an ID or KEY of the entity related to the originating occurrence."
-    },
-    {
       "name": "time",
       "type": "string",
       "logicalType": "timestamp-millis",
