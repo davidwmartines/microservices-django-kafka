@@ -17,12 +17,21 @@ class Event:
     specversion: str = "1.0"
 
 
+def parse_date(val: str) -> datetime:
+    """
+    Handle different variations of datetime as a string.
+    Python serialized datetimes are isoformatted.
+    KSQL serialized have the Z at the end.
+    """
+    return datetime.fromisoformat(str(val).replace("Z", ""))
+
+
 def dict_to_event(val: dict, *args) -> Event:
     return Event(
         UUID(val["id"]),
         val["source"],
         val["type"],
-        datetime.fromisoformat(val["time"]),
+        parse_date(val["time"]),
         val["data"],
         val["specversion"],
     )

@@ -1,8 +1,7 @@
 import logging
-from datetime import datetime
 from uuid import UUID
 
-from events import Event
+from events import Event, parse_date
 from events.handlers import EventHandler
 
 from planning.models import BalanceSheet, Person
@@ -21,7 +20,7 @@ class PersonEventHandler(EventHandler):
         obj, created = Person.objects.update_or_create(
             id=UUID(data["id"]),
             defaults={
-                "date_of_birth": datetime.fromisoformat(data["date_of_birth"])
+                "date_of_birth": parse_date(data["date_of_birth"])
                 if "date_of_birth" in data
                 else None,
             },
@@ -45,7 +44,7 @@ class BalanceSheetEventHandler(EventHandler):
             id=UUID(data["id"]),
             defaults={
                 "person_id": person_id,
-                "date_calculated": datetime.fromisoformat(data["date_created"]),
+                "date_calculated": parse_date(data["date_calculated"]),
                 "assets": int(data["assets"]),
                 "liabilities": int(data["liabilities"]),
             },
