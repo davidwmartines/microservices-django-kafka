@@ -101,9 +101,10 @@ services:
       - postgres
     restart: always
 
-
   person-service-web:
-    build: ./person-service
+    build: 
+      context: .
+      dockerfile: ./person-service/Dockerfile
     env_file:
       - ./person-service/.env
     volumes:
