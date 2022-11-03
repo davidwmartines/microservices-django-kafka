@@ -2,15 +2,18 @@
 
 Demo of a microservice architecture utilizing Django and Kafka.
 
+The primary goal of this example is to demonstrate achieving robust eventual-consistency of domain data between independent microservices, using an event-driven architecture.
+
 
 - Microservices written in Python, using the Django framework.
+- Services have no inter-dependencies. They are coupled only to canonical event schemas.
 - Examples of two types of event production: 
     - Transactional-Outbox pattern
     - Change-Data-Capture on domain model table
-- Debezium Connector, deployed to ksqldb-server.
-- Avro serialization.
-- Schema Registry.
-- ksqldb streams for event transformation.
+- Uses the Debezium Connector, deployed to ksqldb-server.
+- Events are serialized using Avro.
+- Schemas are stored in the Schema Registry.
+- ksqldb streams used for event transformation.
 
 
 ## Architecture
