@@ -1,7 +1,7 @@
 version: '3.7'
 
-volumes:
-  postgres_data:
+# volumes:
+#   postgres_data:
 
 services:
 
@@ -12,7 +12,8 @@ services:
     volumes:
       - ./postgres/init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
       - ./postgres/pg_hba.conf:/etc/postgresql/pg_hba.conf
-      - postgres_data:/var/lib/postgresql/data/
+      # add this volume to persist database data across restarts
+      # - postgres_data:/var/lib/postgresql/data/
     command:
       - "postgres"
       - "-c"
