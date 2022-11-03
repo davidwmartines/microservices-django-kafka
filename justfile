@@ -10,9 +10,11 @@ start:
 terminate:
     docker-compose down
 
+# initialize the Django services.  Performs database migrations and creates a superuser account in each.
 init-services:
     ./initialize_services.sh
 
+# creates the streams and connectors in ksqldb.
 init-ksqldb:
     ./ksqldb/migrate.sh
 
@@ -37,7 +39,7 @@ ksql:
     docker container exec -it microservices-django-kafka_ksqldb_1 ksql
 
 # schema-registry shell
-schema-registry:
+shell-schema-registry:
     docker container exec -it microservices-django-kafka_schema-registry_1 bash
 
 # take ownership of all the files, such as those created by docker
