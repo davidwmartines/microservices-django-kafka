@@ -124,7 +124,9 @@ services:
     restart: always
 
   planning-service-web:
-    build: ./planning-service
+    build: 
+      context: .
+      dockerfile: ./planning-service/Dockerfile
     env_file:
       - ./planning-service/.env
     volumes:
@@ -144,7 +146,9 @@ services:
     restart: always
 
   planning-service-person-consumer:
-    build: ./planning-service
+    build: 
+      context: .
+      dockerfile: ./planning-service/Dockerfile
     env_file:
       - ./planning-service/.env
     volumes:
@@ -169,7 +173,9 @@ services:
     restart: always
 
   planning-service-balance-sheet-consumer:
-    build: ./planning-service
+    build: 
+      context: .
+      dockerfile: ./planning-service/Dockerfile
     env_file:
       - ./planning-service/.env
     volumes:

@@ -6,14 +6,21 @@ RUN pip install -U pip
 
 RUN python3 -m venv /venv
 
-COPY ./requirements.txt ./code/requirements.txt
+# note: This docker-compose build uses the parent directory build context
+# hence the need to use /planning-service/ in these paths.
+# This is done in order to include the events-lib directory as pip installable.
+# Normally we would just use "." to use the directory containing the Dockerfile
+# as the build context.
+
+COPY ./planning-service/requirements.txt ./code/requirements.txt
+COPY ./events-lib/ ./events-lib
 RUN . /venv/bin/activate; pip install -r /code/requirements.txt
 
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONPATH /code
 ENV PATH /venv/bin:/bin:/usr/bin:/usr/local/bin
 
-COPY . /code/
+COPY ./planning-service/ /code/
 
 WORKDIR /code
 
