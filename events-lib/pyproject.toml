@@ -1,0 +1,28 @@
+[build-system]
+requires = [
+  "hatchling",
+  "click",
+  "confluent_kafka",
+  "Django",
+  "django-click",
+  "fastavro"
+]
+build-backend = "hatchling.build"
+
+[project]
+name = "events"
+version = "0.0.1"
+authors = [
+  { name="David Martines", email="none@noemail.com" },
+]
+description = "Example Django-Kafka eventing utilities"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/davidwmartines/microservices-django-kafka"

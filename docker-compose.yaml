@@ -80,7 +80,9 @@ services:
       - ./ksqldb/project:/project
 
   accounting-service-web:
-    build: ./accounting-service
+    build: 
+      context: .
+      dockerfile: ./accounting-service/Dockerfile
     env_file:
       - ./accounting-service/.env
     volumes:
