@@ -13,7 +13,6 @@ The primary goal of this example is to demonstrate achieving robust eventual-con
 - Uses the Debezium Connector, deployed to ksqldb-server.
 - Events are serialized using Avro.
 - Schemas are stored in the Schema Registry.
-- ksqldb streams used for event transformation.
 
 
 ## Architecture
