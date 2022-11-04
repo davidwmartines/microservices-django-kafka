@@ -168,14 +168,3 @@ EVENTS_SOURCE_NAME = "accounting-service"
 EVENTS_SCHEMAS_DIR = "schemas"
 
 KAFKA_BOOTSTRAP_SERVERS = env("KAFKA_BOOTSTRAP_SERVERS")
-
-EVENTS_SCHEMAS_DIR = "events/schemas"
-
-KAFKA_TOPIC_CONFIGS = [
-    {
-        "name": "public_balance_sheet_entity_events",
-        "schema": "balance_sheet.avsc",
-        "partitions": 4,
-        "replication_factor": 1,
-    }
-]

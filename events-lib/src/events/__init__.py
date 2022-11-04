@@ -10,7 +10,7 @@ from django.utils import timezone
 class Config(NamedTuple):
     """
     Defines the configuration properties for creating events
-    from model instances.
+    from model instances using save_event decorator.
     """
 
     schema: str
