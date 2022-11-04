@@ -21,6 +21,7 @@ The primary goal of this example is to demonstrate achieving robust eventual-con
 ![Diagram](/doc/Django-Kafka-Microservices.jpg)
 
 
+Note: See the [convert-cdc-to-canonical-schema](/tree/convert-cdc-to-canonical-schema) branch for an alternate implementation of converting change-data-capture events to a canonical schema.
 
 ## Run
 
