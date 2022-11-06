@@ -5,7 +5,7 @@ requires = [
   "confluent_kafka",
   "Django",
   "django-click",
-  "fastavro"
+  "fastavro",
 ]
 build-backend = "hatchling.build"
 
