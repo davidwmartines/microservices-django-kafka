@@ -17,7 +17,7 @@ CREATE SOURCE CONNECTOR balance_sheet_source WITH (
     'database.password' = '', 
     'database.dbname' = 'accounting', 
     'database.server.name' = 'accounting-service',
-    'slot.name' = 'accounting_service_debezium',
+    'slot.name' = 'accounting_service_bal_sheet_cdc_debezium',
     'table.include.list' = 'public.accounting_balancesheet',
     'value.converter'='io.confluent.connect.avro.AvroConverter',
     'value.converter.schema.registry.url' = '${env:KSQL_KSQL_SCHEMA_REGISTRY_URL}',

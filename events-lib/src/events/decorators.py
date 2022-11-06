@@ -11,7 +11,11 @@ def save_event(config: Config):
     Decorates a model's save method to include
     transactionally saving an event to the outbox table.
 
-    Inspired by https://github.com/juntossomosmais/django-outbox-pattern
+    Arguments:
+        config (Config): a config object that specifies how to create events from the model on save.
+
+    Note:
+        Inspired by https://github.com/juntossomosmais/django-outbox-pattern
     """
 
     def save(self, *args, **kwargs):
@@ -42,7 +46,7 @@ _serializers = {}
 def _create_outbox_item(model: object, config: Config) -> OutboxItem:
     serializer = _serializers.get(config.schema)
     if not serializer:
-        serializer = EventSerializer(config)
+        serializer = EventSerializer(schema=config.schema, topic=config.topic)
         _serializers[config.schema] = serializer
 
     event = create_event(config.event_type, config.to_dict(model))

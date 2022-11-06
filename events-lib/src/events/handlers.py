@@ -1,7 +1,7 @@
 import logging
 import os
 from abc import ABC, abstractmethod
-
+from typing import Any
 from confluent_kafka import Message
 from confluent_kafka.schema_registry import SchemaRegistryClient
 from confluent_kafka.schema_registry.avro import AvroDeserializer
@@ -28,8 +28,16 @@ class EventHandler(ABC):
     used for deserialization.
     """
 
+    def from_dict(self, val: dict, *args: Any) -> Any:
+        """
+        Converts the incoming deserialized dictionary into an Event instance or other object.
+        The default behavior is to create an Event object, based on the CloudEvents spec event model.
+        Subclasses can override this depending on the structure of the event recieved.
+        """
+        return dict_to_event(val, *args)
+
     @abstractmethod
-    def handle(self, event: Event) -> None:
+    def handle(self, event: Event or object) -> None:
         """
         Template method for subclasses to perform their handling of specific event types.
 
@@ -58,7 +66,7 @@ class EventHandler(ABC):
         )
 
         self.deserializer = AvroDeserializer(
-            schema_registry_client, schema_str=schema_string, from_dict=dict_to_event
+            schema_registry_client, schema_str=schema_string, from_dict=self.from_dict
         )
 
     def __call__(self, message: Message) -> None:
@@ -74,8 +82,16 @@ class EventHandler(ABC):
         event = self.deserializer(
             message.value(), SerializationContext(message.topic(), MessageField.VALUE)
         )
-        logger.debug(
-            f"successfully deserialized {event.event_type} event id {event.id} from {event.source}."
-        )
+        if isinstance(event, Event):
+            logger.debug(
+                f"successfully deserialized {event.event_type} event id {event.id} from {event.source}."
+            )
+        else:
+            logger.debug("successfully deserialized message")
+
         self.handle(event)
-        logger.info(f"event {event.id} was handled")
+
+        if isinstance(event, Event):
+            logger.info(f"event {event.id} was handled")
+        else:
+            logger.info("message was handled")

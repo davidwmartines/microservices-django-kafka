@@ -101,6 +101,33 @@ services:
       - postgres
     restart: always
 
+  accounting-service-cdc-consumer:
+    build:
+      context: .
+      dockerfile: ./accounting-service/Dockerfile
+    env_file:
+      - ./accounting-service/.env
+    volumes:
+      - ./wait-for-it.sh:/code/wait-for-it.sh
+    command:
+      [
+        "./wait-for-it.sh",
+        "schema-registry:8081",
+        "--",
+        "./manage.py",
+        "consume_events",
+        "--topic",
+        "private_accounting_bal_sheet_cdc",
+        "--consumer_group_id",
+        "accounting-consumer-1",
+        "--handler",
+        "accounting.handlers.BalanceSheetCDCSchemaConverter"
+      ]
+    depends_on:
+      - schema-registry
+      - postgres
+    restart: always
+
   person-service-web:
     build: 
       context: .
