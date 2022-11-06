@@ -56,20 +56,24 @@ class OutboxItem(models.Model):
 
     @classmethod
     def from_event(
-        cls, event: Event, topic: str, key: str, serializer: Callable[[object], dict]
+        cls,
+        event: Event,
+        topic: str,
+        key: str,
+        serializer: Callable[[dict], str or bytes],
     ):
         """
         Utility function for creating an OutboxItem from an event instance.
         """
 
-        payload = serializer(event)
+        payload = serializer(event.data)
 
         return OutboxItem(
             id=event.id,
             topic=topic,
             message_key=key,
             timestamp=event.time,
-            event_type=event.event_type,
+            event_type=event.type,
             source=event.source,
             content_type="application/avro",
             payload=payload,

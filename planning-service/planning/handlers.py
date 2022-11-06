@@ -39,16 +39,9 @@ class BalanceSheetEventHandler(EventHandler):
     """
     Handles BalanceSheet events from Kafka
     by creating a balance sheet record in this service's local database.
-
-    Note:  For this handler, we do not specify a reader-schema file.
-    This is because these events are actually serialized by ksqlb using its
-    own logical schema, which does not match the canonical BalanceSheet schema,
-    even though it is functionally identical.  The data we receive matches
-    the expected structure.
-
-    TODO: Make the selection of schema file not so reliant on knowing what schema
-    the source system is using (either canonical avsc file or ksql-generated).
     """
+
+    schema_file_name = "balance_sheet.avsc"
 
     def handle(self, event: Event) -> None:
         data = event.data
