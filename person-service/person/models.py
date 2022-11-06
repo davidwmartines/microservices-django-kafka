@@ -2,8 +2,7 @@ from django.db import models
 from django_extensions.db.models import TimeStampedModel
 from datetime import datetime
 from uuid import uuid4
-from events.decorators import save_event
-from events import Config
+from events.decorators import save_event, Config
 
 
 def demo_date_of_birth():

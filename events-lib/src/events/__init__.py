@@ -1,12 +1,11 @@
-from dataclasses import dataclass
 from datetime import datetime, timezone
+from typing import NamedTuple, Callable
 from uuid import UUID, uuid4
 
 from django.conf import settings
 
 
-@dataclass
-class Event:
+class Event(NamedTuple):
     """
     An event occurrence to be produced or consumed from to Kafka,
     in the form of an event envelope structure containing
@@ -44,16 +43,37 @@ def parse_date(val: str) -> datetime:
     return datetime.fromisoformat(str(val).replace("Z", "+00:00"))
 
 
-def dict_to_event(val: dict, *args) -> Event:
+class BinaryModeEvent(NamedTuple):
     """
-    Utility function for converting a deserialized
-    dict from an incoming message into an Event.
+    Represents an event in binary mode representation.
     """
+
+    headers: dict
+    data: bytes
+
+
+def to_binary(
+    event: Event, data_serializer: Callable[[Event], str or bytes]
+) -> BinaryModeEvent:
+    return BinaryModeEvent(
+        headers={
+            "ce_id": str(event.id),
+            "ce_type": event.type,
+            "ce_source": event.source,
+            "ce_time": event.time.isoformat(),
+            "content-type": "application/avro",
+        },
+        data=data_serializer(event.data),
+    )
+
+
+def from_binary(
+    headers: dict, data: str or bytes, data_deserializer: Callable[[str or bytes], dict]
+) -> Event:
     return Event(
-        UUID(val["id"]),
-        val["source"],
-        val["type"],
-        parse_date(val["time"]),
-        val["data"],
-        val["specversion"],
+        id=UUID(headers["ce_id"]),
+        type=headers["ce_type"],
+        source=headers["ce_source"],
+        time=parse_date(headers["ce_time"]),
+        data=data_deserializer(data),
     )

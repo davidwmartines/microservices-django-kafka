@@ -1,14 +1,13 @@
 import logging
 import os
 from abc import ABC, abstractmethod
-from typing import Any
 from confluent_kafka import Message
 from confluent_kafka.schema_registry import SchemaRegistryClient
 from confluent_kafka.schema_registry.avro import AvroDeserializer
 from confluent_kafka.serialization import MessageField, SerializationContext
 from django.conf import settings
 
-from events import Event, dict_to_event
+from events import Event, from_binary
 
 logger = logging.getLogger(__name__)
 
@@ -27,14 +26,6 @@ class EventHandler(ABC):
     If None, the writer-schema of the incoming message will be
     used for deserialization.
     """
-
-    def from_dict(self, val: dict, *args: Any) -> Any:
-        """
-        Converts the incoming deserialized dictionary into an Event instance or other object.
-        The default behavior is to create an Event object, based on the CloudEvents spec event model.
-        Subclasses can override this depending on the structure of the event recieved.
-        """
-        return dict_to_event(val, *args)
 
     @abstractmethod
     def handle(self, event: Event or object) -> None:
@@ -66,7 +57,7 @@ class EventHandler(ABC):
         )
 
         self.deserializer = AvroDeserializer(
-            schema_registry_client, schema_str=schema_string, from_dict=self.from_dict
+            schema_registry_client, schema_str=schema_string
         )
 
     def __call__(self, message: Message) -> None:
@@ -79,12 +70,32 @@ class EventHandler(ABC):
         logger.debug(
             f"handling message key {message.key().decode()} topic {message.topic()}"
         )
-        event = self.deserializer(
-            message.value(), SerializationContext(message.topic(), MessageField.VALUE)
-        )
+
+        headers_list = message.headers()
+        if headers_list:
+            header_dict = {h[0]: h[1].decode() for h in headers_list}
+
+        if header_dict and all(
+            key in header_dict for key in ("ce_id", "ce_source", "ce_time", "ce_type")
+        ):
+            # appears to be a CloudEvents binary mode event
+            event = from_binary(
+                header_dict,
+                message.value(),
+                lambda v: self.deserializer(
+                    v, SerializationContext(message.topic(), MessageField.VALUE)
+                ),
+            )
+        else:
+            # appears to be structured mode, just return event as dict values
+            event = self.deserializer(
+                message.value(),
+                SerializationContext(message.topic(), MessageField.VALUE),
+            )
+
         if isinstance(event, Event):
             logger.debug(
-                f"successfully deserialized {event.event_type} event id {event.id} from {event.source}."
+                f"successfully deserialized {event.type} event id {event.id} from {event.source}."
             )
         else:
             logger.debug("successfully deserialized message")

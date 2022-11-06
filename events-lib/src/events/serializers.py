@@ -1,17 +1,14 @@
 import os
-from typing import Any
 
 from confluent_kafka.schema_registry import SchemaRegistryClient
 from confluent_kafka.schema_registry.avro import AvroSerializer
 from confluent_kafka.serialization import MessageField, SerializationContext
 from django.conf import settings
 
-from . import Event
-
 
 class EventSerializer:
     """
-    Serializes `Event` instances.
+    Serializes `Event` data.
 
     Callable.
 
@@ -36,20 +33,9 @@ class EventSerializer:
 
         # create schema registry client and avro serializer
         registry_client = SchemaRegistryClient({"url": settings.SCHEMA_REGISTRY_URL})
-        self._serializer = AvroSerializer(
-            registry_client,
-            schema_string,
-            to_dict=lambda event, ctx: dict(
-                id=str(event.id),
-                type=event.event_type,
-                source=event.source,
-                specversion=event.specversion,
-                time=event.time.isoformat(),
-                data=event.data,
-            ),
-        )
+        self._serializer = AvroSerializer(registry_client, schema_string)
 
-    def __call__(self, event: Event) -> Any:
+    def __call__(self, data: dict) -> str or bytes:
         return self._serializer(
-            event, SerializationContext(self._topic, MessageField.VALUE)
+            data, SerializationContext(self._topic, MessageField.VALUE)
         )
