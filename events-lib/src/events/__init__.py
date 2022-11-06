@@ -1,66 +1,35 @@
-from dataclasses import dataclass
-from datetime import datetime
-from typing import Callable, NamedTuple
+from datetime import datetime, timezone
+from typing import NamedTuple, Callable
 from uuid import UUID, uuid4
 
 from django.conf import settings
-from django.utils import timezone
 
 
-class Config(NamedTuple):
+class Event(NamedTuple):
     """
-    Defines the configuration properties for creating events
-    from model instances using save_event decorator.
-    """
-
-    schema: str
-    """
-    Name of the schema to use.
-    """
-
-    topic: str
-    """
-    The topic name (subject) the schema will be registred to.
-    """
-
-    event_type: str
-    """
-    The type of event to generate.
-    """
-
-    to_dict: Callable[[object], dict]
-    """
-    Function that takes a model and returns a dictionary
-    matching the data payload of the target schema.
-    """
-
-
-@dataclass
-class Event:
-    """
-    A event occurrence to be produced or consumed from to Kafka,
+    An event occurrence to be produced or consumed from to Kafka,
     in the form of an event envelope structure containing
     the event data.
-    This maps to a CloudEvents spec compliant event.
+    This maps to a CloudEvents spec event.
     """
 
     id: UUID
     source: str
-    event_type: str
+    type: str
     time: datetime
     data: dict
     specversion: str = "1.0"
 
 
-def create_event(event_type: str, data: dict) -> Event:
+def create_event(type: str, data: dict) -> Event:
     """
     Utility function for creating an Event to be produced.
     """
     return Event(
         id=uuid4(),
         source=settings.EVENTS_SOURCE_NAME,
-        event_type=event_type,
-        time=timezone.now(),
+        type=type,
+        time=datetime.now(timezone.utc),
         data=data,
     )
 
@@ -74,16 +43,37 @@ def parse_date(val: str) -> datetime:
     return datetime.fromisoformat(str(val).replace("Z", "+00:00"))
 
 
-def dict_to_event(val: dict, *args) -> Event:
+class BinaryModeEvent(NamedTuple):
     """
-    Utility function for converting a deserialized
-    dict from an incoming message into an Event.
+    Represents an event in binary mode representation.
     """
+
+    headers: dict
+    data: bytes
+
+
+def to_binary(
+    event: Event, data_serializer: Callable[[Event], str or bytes]
+) -> BinaryModeEvent:
+    return BinaryModeEvent(
+        headers={
+            "ce_id": str(event.id),
+            "ce_type": event.type,
+            "ce_source": event.source,
+            "ce_time": event.time.isoformat(),
+            "content-type": "application/avro",
+        },
+        data=data_serializer(event.data),
+    )
+
+
+def from_binary(
+    headers: dict, data: str or bytes, data_deserializer: Callable[[str or bytes], dict]
+) -> Event:
     return Event(
-        UUID(val["id"]),
-        val["source"],
-        val["type"],
-        parse_date(val["time"]),
-        val["data"],
-        val["specversion"],
+        id=UUID(headers["ce_id"]),
+        type=headers["ce_type"],
+        source=headers["ce_source"],
+        time=parse_date(headers["ce_time"]),
+        data=data_deserializer(data),
     )

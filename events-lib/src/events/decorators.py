@@ -1,9 +1,39 @@
+from typing import Callable, NamedTuple
+
 from django.db import transaction
 
 from events.models import OutboxItem
 from events.serializers import EventSerializer
 
-from . import Config, create_event
+from . import create_event
+
+
+class Config(NamedTuple):
+    """
+    Defines the configuration properties for creating events
+    from model instances using save_event decorator.
+    """
+
+    schema: str
+    """
+    Name of the schema to use.
+    """
+
+    topic: str
+    """
+    The topic name (subject) the schema will be registred to.
+    """
+
+    event_type: str
+    """
+    The type of event to generate.
+    """
+
+    to_dict: Callable[[object], dict]
+    """
+    Function that takes a model and returns a dictionary
+    matching the data payload of the target schema.
+    """
 
 
 def save_event(config: Config):

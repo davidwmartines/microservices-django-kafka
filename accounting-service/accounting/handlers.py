@@ -24,10 +24,6 @@ class BalanceSheetCDCSchemaConverter(EventHandler):
             schema=self.target_schema, topic=self.target_topic
         )
 
-    def from_dict(self, val: dict, *args) -> object:
-        # in this case, we are not converting to an Event object, but just using the dict as is.
-        return val
-
     def handle(self, event: Event) -> None:
 
         # create a new event in the canonical schema, based on the incoming data
