@@ -1,66 +1,36 @@
 from dataclasses import dataclass
-from datetime import datetime
-from typing import Callable, NamedTuple
+from datetime import datetime, timezone
 from uuid import UUID, uuid4
 
 from django.conf import settings
-from django.utils import timezone
-
-
-class Config(NamedTuple):
-    """
-    Defines the configuration properties for creating events
-    from model instances using save_event decorator.
-    """
-
-    schema: str
-    """
-    Name of the schema to use.
-    """
-
-    topic: str
-    """
-    The topic name (subject) the schema will be registred to.
-    """
-
-    event_type: str
-    """
-    The type of event to generate.
-    """
-
-    to_dict: Callable[[object], dict]
-    """
-    Function that takes a model and returns a dictionary
-    matching the data payload of the target schema.
-    """
 
 
 @dataclass
 class Event:
     """
-    A event occurrence to be produced or consumed from to Kafka,
+    An event occurrence to be produced or consumed from to Kafka,
     in the form of an event envelope structure containing
     the event data.
-    This maps to a CloudEvents spec compliant event.
+    This maps to a CloudEvents spec event.
     """
 
     id: UUID
     source: str
-    event_type: str
+    type: str
     time: datetime
     data: dict
     specversion: str = "1.0"
 
 
-def create_event(event_type: str, data: dict) -> Event:
+def create_event(type: str, data: dict) -> Event:
     """
     Utility function for creating an Event to be produced.
     """
     return Event(
         id=uuid4(),
         source=settings.EVENTS_SOURCE_NAME,
-        event_type=event_type,
-        time=timezone.now(),
+        type=type,
+        time=datetime.now(timezone.utc),
         data=data,
     )
 
