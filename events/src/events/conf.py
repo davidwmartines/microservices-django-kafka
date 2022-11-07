@@ -1,13 +1,14 @@
-from django.conf import settings
+import sys
 from typing import NamedTuple
 
-import sys
+from django.conf import settings
+from django.core.signals import setting_changed
+from django.test.signals import setting_changed as setting_changed_test
 
-this = sys.modules[__name__]
+from events.enums import CloudEventsMode, SerializationFormat
 
 
 class EventsConfiguration(NamedTuple):
-
     types: dict = {}
     defaults: dict = {}
     schema_registry_url: str = ""
@@ -23,10 +24,15 @@ class EventType(NamedTuple):
     mode: str
 
 
+# singleton instance
+this = sys.modules[__name__]
 this.conf_instance: EventsConfiguration = None
 
 
 def events_conf() -> EventsConfiguration:
+    """
+    Gets the EventConfiguration.
+    """
     if this.conf_instance:
         return this.conf_instance
 
@@ -41,8 +47,8 @@ def events_conf() -> EventsConfiguration:
                 t["NAME"],
                 t["SCHEMA"],
                 t["TOPIC"],
-                t.get("FORMAT", defaults.get("FORMAT", "AVRO")),
-                t.get("MODE", defaults.get("MODE", "BINARY")),
+                SerializationFormat(t.get("FORMAT", defaults.get("FORMAT", "avro"))),
+                CloudEventsMode(t.get("MODE", defaults.get("MODE", "binary"))),
             )
             for t in conf_section.get("TYPES", [])
         },
@@ -52,3 +58,11 @@ def events_conf() -> EventsConfiguration:
     )
 
     return this.conf_instance
+
+
+def on_settings_changed(sender, **kwargs):
+    this.conf_instance = None
+
+
+setting_changed.connect(on_settings_changed)
+setting_changed_test.connect(on_settings_changed)
