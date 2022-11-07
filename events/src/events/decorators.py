@@ -3,7 +3,6 @@ from typing import Callable, NamedTuple
 from django.db import transaction
 
 from events.models import OutboxItem
-from events.serializers import EventSerializer
 
 from . import create_event
 
@@ -70,17 +69,6 @@ def save_event(config: Config):
     return decorator_save_event
 
 
-_serializers = {}
-
-
 def _create_outbox_item(model: object, config: Config) -> OutboxItem:
-    serializer = _serializers.get(config.schema)
-    if not serializer:
-        serializer = EventSerializer(schema=config.schema, topic=config.topic)
-        _serializers[config.schema] = serializer
-
-    event = create_event(config.event_type, config.to_dict(model))
-
-    return OutboxItem.from_event(
-        event, topic=config.topic, key=model.pk, serializer=serializer
-    )
+    event = create_event(config.event_type, model)
+    return OutboxItem.from_event(event, key=model.pk, to_dict=config.to_dict)

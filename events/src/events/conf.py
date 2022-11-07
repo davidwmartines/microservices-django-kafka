@@ -1,5 +1,6 @@
 import sys
 from typing import NamedTuple
+import os
 
 from django.conf import settings
 from django.core.signals import setting_changed
@@ -14,6 +15,7 @@ class EventsConfiguration(NamedTuple):
     schema_registry_url: str = ""
     bootstrap_servers: str = ""
     event_source_name: str = ""
+    schemas_dir: str = ""
 
 
 class EventType(NamedTuple):
@@ -55,6 +57,9 @@ def events_conf() -> EventsConfiguration:
         schema_registry_url=str(conf_section["SCHEMA_REGISTRY_URL"]),
         bootstrap_servers=str(conf_section.get("BOOTSTRAP_SERVERS", "")),
         event_source_name=conf_section["EVENT_SOURCE_NAME"],
+        schemas_dir=os.path.join(
+            settings.BASE_DIR, conf_section.get("SCHEMAS_DIR", "schemas")
+        ),
     )
 
     return this.conf_instance

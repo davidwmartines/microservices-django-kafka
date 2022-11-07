@@ -1,5 +1,6 @@
 from django.db import models
-from events import Event
+from . import Event
+from conversion.factory import get_converter
 from typing import Callable
 
 
@@ -56,25 +57,23 @@ class OutboxItem(models.Model):
 
     @classmethod
     def from_event(
-        cls,
-        event: Event,
-        topic: str,
-        key: str,
-        serializer: Callable[[dict], str or bytes],
+        cls, event: Event, key: str = None, to_dict: Callable[[object], dict] = None
     ):
         """
         Utility function for creating an OutboxItem from an event instance.
         """
 
-        payload = serializer(event.data)
+        converter = get_converter(event)
+
+        protocol_event = converter(event, mapper=to_dict, key_mapper=lambda e: key)
 
         return OutboxItem(
             id=event.id,
-            topic=topic,
+            topic=getattr(protocol_event, "topic"),
             message_key=key,
             timestamp=event.time,
             event_type=event.type,
             source=event.source,
-            content_type="application/avro",
-            payload=payload,
+            content_type=protocol_event.headers.get("content-type"),
+            payload=protocol_event.body,
         )
