@@ -11,7 +11,8 @@ DEBUG = False
 INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
-    "tests.testapp.apps.TestAppConfig"
+    "testapp",
+    "events"
 ]
 
 ROOT_URLCONF = __name__

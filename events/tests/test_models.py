@@ -2,8 +2,8 @@ from datetime import datetime, timezone
 
 import responses
 from django.test import TestCase
-from src.events import create_event
-from src.events.models import OutboxItem
+from events import create_event
+from events.models import OutboxItem
 
 
 class OutboxItemTestCase(TestCase):

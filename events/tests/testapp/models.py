@@ -1,5 +1,5 @@
 from django.db import models
-from src.events.decorators import save_event, Config
+from events.decorators import save_event, Config
 
 from uuid import uuid4
 
@@ -13,3 +13,6 @@ class Widget(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid4)
     name = models.CharField(max_length=255)
+
+    class Meta:
+        app_label = "testapp"

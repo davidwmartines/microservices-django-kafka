@@ -1,7 +1,7 @@
 from django.test import TestCase
 from src.events.conf import EventsConfiguration, EventType, events_conf
 
-from src.events.enums import CloudEventsMode, SerializationFormat
+from events.enums import CloudEventsMode, SerializationFormat
 
 
 class EventsConfTestCase(TestCase):
