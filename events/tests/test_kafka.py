@@ -2,8 +2,8 @@ from datetime import datetime, timezone
 
 import responses
 from django.test import TestCase
-from src.events import create_event
-from src.events.conversion.kafka import BinaryKafkaEventConverter
+from events import create_event
+from events.conversion.kafka import BinaryKafkaEventConverter
 
 
 class BinaryKafkaEventConverterTestCase(TestCase):

@@ -1,6 +1,5 @@
 from django.test import TestCase
-from src.events.conf import EventsConfiguration, EventType, events_conf
-
+from events.conf import EventsConfiguration, EventType, events_conf
 from events.enums import CloudEventsMode, SerializationFormat
 
 
