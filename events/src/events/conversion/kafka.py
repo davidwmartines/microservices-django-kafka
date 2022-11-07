@@ -53,14 +53,18 @@ class KafkaEventConverter(ABC, EventConverter):
     def _get_body_and_headers(
         self,
         event: Event,
-        mode: CloudEventsMode,
         conf: EventsConfiguration,
         to_dict: Callable[[object], dict] = None,
     ) -> Tuple[dict, dict]:
         raise NotImplementedError()
 
     def __call__(
-        self, event: Event, key_mapper: Callable[[Event], str or bytes], *args, **kwargs
+        self,
+        event: Event,
+        to_dict: Callable[[object], dict] = None,
+        key_mapper: Callable[[Event], str or bytes] = None,
+        *args,
+        **kwargs
     ) -> KafkaEvent:
 
         assert event
@@ -73,7 +77,6 @@ class KafkaEventConverter(ABC, EventConverter):
         topic = kwargs.get("topic", event_type_conf.topic)
         format = kwargs.get("format", event_type_conf.format)
         mode = kwargs.get("mode", event_type_conf.mode)
-        to_dict = kwargs.get("to_dict", None)
 
         serializer = _serializers.get(schema)
         if not serializer:
@@ -83,13 +86,16 @@ class KafkaEventConverter(ABC, EventConverter):
             serializer = serializer_type(client, schema_string)
             _serializers[schema] = serializer
 
-        body, headers = self._get_body_and_headers(event, mode, conf, to_dict)
+        body, headers = self._get_body_and_headers(event, conf, to_dict)
 
         value = serializer(body, SerializationContext(topic, MessageField.VALUE))
 
         headers["content-type"] = _get_content_type_header(format, mode)
 
-        key = key_mapper(event)
+        if key_mapper:
+            key = key_mapper(event)
+        else:
+            key = None
 
         return KafkaEvent(event, value, key, topic, headers)
 
@@ -98,7 +104,6 @@ class BinaryKafkaEventConverter(KafkaEventConverter):
     def _get_body_and_headers(
         self,
         event: Event,
-        mode: CloudEventsMode,
         conf: EventsConfiguration,
         to_dict: Callable[[object], dict] = None,
     ) -> Tuple[dict, dict]:

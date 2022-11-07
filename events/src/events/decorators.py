@@ -2,7 +2,7 @@ from typing import Callable, NamedTuple
 
 from django.db import transaction
 
-from events.models import OutboxItem
+from .models import OutboxItem
 
 from . import create_event
 
@@ -13,17 +13,7 @@ class Config(NamedTuple):
     from model instances using save_event decorator.
     """
 
-    schema: str
-    """
-    Name of the schema to use.
-    """
-
-    topic: str
-    """
-    The topic name (subject) the schema will be registred to.
-    """
-
-    event_type: str
+    type: str
     """
     The type of event to generate.
     """
@@ -70,5 +60,7 @@ def save_event(config: Config):
 
 
 def _create_outbox_item(model: object, config: Config) -> OutboxItem:
-    event = create_event(config.event_type, model)
-    return OutboxItem.from_event(event, key=model.pk, to_dict=config.to_dict)
+    event = create_event(config.type, config.to_dict(model))
+    return OutboxItem.from_event(
+        event, key_mapper=lambda e: str(model.pk)
+    )

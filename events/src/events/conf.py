@@ -1,12 +1,16 @@
 import sys
-from typing import NamedTuple
+from typing import NamedTuple, Callable
 import os
 
 from django.conf import settings
 from django.core.signals import setting_changed
 from django.test.signals import setting_changed as setting_changed_test
 
-from events.enums import CloudEventsMode, SerializationFormat
+from django.db.models import Model
+
+from .enums import CloudEventsMode, SerializationFormat
+
+from . import Event
 
 
 class EventsConfiguration(NamedTuple):
@@ -59,7 +63,7 @@ def events_conf() -> EventsConfiguration:
         event_source_name=conf_section["EVENT_SOURCE_NAME"],
         schemas_dir=os.path.join(
             settings.BASE_DIR, conf_section.get("SCHEMAS_DIR", "schemas")
-        ),
+        )
     )
 
     return this.conf_instance
@@ -71,3 +75,6 @@ def on_settings_changed(sender, **kwargs):
 
 setting_changed.connect(on_settings_changed)
 setting_changed_test.connect(on_settings_changed)
+
+
+

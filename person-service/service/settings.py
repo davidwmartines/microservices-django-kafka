@@ -136,6 +136,17 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 SESSION_COOKIE_NAME = "person-service"
 
-SCHEMA_REGISTRY_URL = env("SCHEMA_REGISTRY_URL")
-EVENTS_SOURCE_NAME = "person-service"
-EVENTS_SCHEMAS_DIR = "schemas"
+
+EVENTS = {
+    "TYPES": [
+        {
+            "NAME": "person_entity_state",
+            "SCHEMA": "person.avsc",
+            "TOPIC": "public_person_entity_events",
+        }
+    ],
+    "DEFAULTS": {"FORMAT": "avro", "MODE": "binary"},
+    "SCHEMA_REGISTRY_URL": env("SCHEMA_REGISTRY_URL"),
+    "SCHEMAS_DIR": "schemas",
+    "EVENT_SOURCE_NAME": "person-service",
+}

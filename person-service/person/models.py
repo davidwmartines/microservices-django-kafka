@@ -11,9 +11,7 @@ def demo_date_of_birth():
 
 @save_event(
     Config(
-        schema="person.avsc",
-        topic="public_person_entity_events",
-        event_type="person_entity_state",
+        type="person_entity_state",
         to_dict=lambda o: dict(
             id=str(o.id),
             first_name=o.first_name,

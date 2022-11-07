@@ -4,7 +4,6 @@ import responses
 from django.test import TestCase
 from src.events import create_event
 from src.events.models import OutboxItem
-from src.events.conversion.kafka import BinaryKafkaEventConverter
 
 
 class OutboxItemTestCase(TestCase):
@@ -44,7 +43,7 @@ class OutboxItemTestCase(TestCase):
                 },
             )
 
-            item = OutboxItem.from_event(event, key="12345")
+            item = OutboxItem.from_event(event, key_mapper=lambda e: str(12345))
 
             self.assertEqual(item.id, event.id)
             self.assertEqual(item.content_type, "application/avro")

@@ -13,7 +13,7 @@ RUN python3 -m venv /venv
 # as the build context.
 
 COPY ./accounting-service/requirements.txt ./code/requirements.txt
-COPY ./events-lib/ ./events-lib
+COPY ./events/ ./events
 RUN . /venv/bin/activate; pip install -r /code/requirements.txt
 
 ENV PYTHONUNBUFFERED 1

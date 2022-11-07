@@ -1,0 +1,16 @@
+{
+  "namespace": "example",
+  "name": "Widget",
+  "type": "record",
+  "doc": "Widget event.",
+  "fields": [
+    {
+      "name": "ID",
+      "type": "string"
+    },
+    {
+      "name": "Name",
+      "type": "string"
+    }
+  ]
+}

@@ -61,7 +61,10 @@ class OutboxItem(models.Model):
 
     @classmethod
     def from_event(
-        cls, event: Event, key: str = None, to_dict: Callable[[object], dict] = None
+        cls,
+        event: Event,
+        to_dict: Callable[[object], dict] = None,
+        key_mapper: Callable[[Event], str or bytes] = None,
     ):
         """
         Utility function for creating an OutboxItem from an event instance.
@@ -69,12 +72,12 @@ class OutboxItem(models.Model):
 
         converter = get_converter(event)
 
-        protocol_event = converter(event, mapper=to_dict, key_mapper=lambda e: key)
+        protocol_event = converter(event, to_dict=to_dict, key_mapper=key_mapper)
 
         return OutboxItem(
             id=event.id,
             topic=getattr(protocol_event, "topic"),
-            message_key=key,
+            message_key=getattr(protocol_event, "key"),
             timestamp=event.time,
             event_type=event.type,
             source=event.source or events_conf().event_source_name,
