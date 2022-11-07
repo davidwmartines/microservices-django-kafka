@@ -3,11 +3,12 @@ from datetime import datetime, timezone
 import responses
 from django.test import TestCase
 from src.events import create_event
+from src.events.models import OutboxItem
 from src.events.conversion.kafka import BinaryKafkaEventConverter
 
 
-class BinaryKafkaEventConverterTestCase(TestCase):
-    def test_call(self):
+class OutboxItemTestCase(TestCase):
+    def test_create_from_event(self):
 
         with self.settings(
             EVENTS={
@@ -42,16 +43,14 @@ class BinaryKafkaEventConverterTestCase(TestCase):
                     "opened_on": datetime(2000, 1, 1, tzinfo=timezone.utc).isoformat(),
                 },
             )
-            converter = BinaryKafkaEventConverter()
-            protocol_event = converter(event, key_mapper=lambda e: str(12345))
 
-            self.assertEqual(protocol_event.key, "12345")
-            self.assertEqual(protocol_event.topic, "pull_requests")
-            self.assertIsInstance(protocol_event.body, bytes)
-            self.assertIsInstance(protocol_event.headers, dict)
-            self.assertEqual(protocol_event.headers["ce_id"], str(event.id))
-            self.assertEqual(protocol_event.headers["ce_source"], "my-app")
-            self.assertEqual(protocol_event.headers["ce_time"], event.time.isoformat())
-            self.assertEqual(protocol_event.headers["ce_type"], event.type)
-            self.assertEqual(protocol_event.headers["ce_specversion"], "1.0")
-            self.assertEqual(protocol_event.headers["content-type"], "application/avro")
+            item = OutboxItem.from_event(event, key="12345")
+
+            self.assertEqual(item.id, event.id)
+            self.assertEqual(item.content_type, "application/avro")
+            self.assertEqual(item.event_type, "com.github.pullrequest.opened")
+            self.assertEqual(item.message_key, "12345")
+            self.assertEqual(item.source, "my-app")
+            self.assertEqual(item.topic, "pull_requests")
+            self.assertEqual(item.timestamp, event.time)
+            self.assertIsInstance(item.payload, bytes)

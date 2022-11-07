@@ -1,7 +1,8 @@
 from django.db import models
 from . import Event
-from conversion.factory import get_converter
+from .conversion.factory import get_converter
 from typing import Callable
+from .conf import events_conf
 
 
 class OutboxItem(models.Model):
@@ -55,6 +56,9 @@ class OutboxItem(models.Model):
     (envelope and data).
     """
 
+    class Meta:
+        app_label = "events"
+
     @classmethod
     def from_event(
         cls, event: Event, key: str = None, to_dict: Callable[[object], dict] = None
@@ -73,7 +77,7 @@ class OutboxItem(models.Model):
             message_key=key,
             timestamp=event.time,
             event_type=event.type,
-            source=event.source,
+            source=event.source or events_conf().event_source_name,
             content_type=protocol_event.headers.get("content-type"),
             payload=protocol_event.body,
         )

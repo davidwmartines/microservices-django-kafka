@@ -5,10 +5,7 @@ from uuid import UUID, uuid4
 
 class Event(NamedTuple):
     """
-    An event occurrence to be produced or consumed from to Kafka,
-    in the form of an event envelope structure containing
-    the event data.
-    This maps to a CloudEvents spec event.
+    A CloudEvents-spec event occurrence.
     """
 
     id: UUID
@@ -18,15 +15,12 @@ class Event(NamedTuple):
     source: str = ""
 
 
-def create_event(type: str, data: dict) -> Event:
+def create_event(type: str, data: dict or object, source="") -> Event:
     """
     Utility function for creating an Event to be produced.
     """
     return Event(
-        id=uuid4(),
-        type=type,
-        time=datetime.now(timezone.utc),
-        data=data,
+        id=uuid4(), type=type, time=datetime.now(timezone.utc), data=data, source=source
     )
 
 
