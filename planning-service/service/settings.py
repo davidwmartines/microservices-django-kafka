@@ -162,6 +162,22 @@ LOGGING = {
 
 SESSION_COOKIE_NAME = "planning-service"
 
-SCHEMA_REGISTRY_URL = env("SCHEMA_REGISTRY_URL")
-KAFKA_BOOTSTRAP_SERVERS = env("KAFKA_BOOTSTRAP_SERVERS")
-EVENTS_SCHEMAS_DIR = "schemas"
+EVENTS = {
+    "TYPES": [
+        {
+            "NAME": "person_entity_state",
+            "SCHEMA": "person.avsc",
+            "TOPIC": "public_person_entity_events",
+        },
+        {
+            "NAME": "balance_sheet_created",
+            "SCHEMA": "balance_sheet.avsc",
+            "TOPIC": "public_balance_sheet_entity_events",
+        },
+    ],
+    "DEFAULTS": {"FORMAT": "avro", "MODE": "binary"},
+    "SCHEMA_REGISTRY_URL": env("SCHEMA_REGISTRY_URL"),
+    "BOOTSTRAP_SERVERS": env("KAFKA_BOOTSTRAP_SERVERS"),
+    "SCHEMAS_DIR": "schemas",
+    "EVENT_SOURCE_NAME": "planning-service",
+}

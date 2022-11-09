@@ -10,7 +10,7 @@ from confluent_kafka.schema_registry import SchemaRegistryClient
 from confluent_kafka.schema_registry.avro import AvroDeserializer
 from confluent_kafka.serialization import MessageField, SerializationContext
 
-from conversion import to_cloudevent
+from .conversion import to_cloudevent
 
 from .conf import events_conf
 
@@ -78,14 +78,6 @@ class GenericEventHandler(ABC):
     Base class for handlers of non-cloudevent messages from Kafka.
 
     GenericEventHandler instances are Callable.
-    """
-
-    schema_file_name: str = None
-    """
-    Allows using an explicit reader-schema for deserialization
-    by specifying the file name of schema.
-    If None, the writer-schema of the incoming message will be
-    used for deserialization.
     """
 
     @abstractmethod

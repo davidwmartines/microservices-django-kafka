@@ -7,7 +7,8 @@ requires = [
   "django-click",
   "fastavro",
   "jsonschema",
-  "https://github.com/davidwmartines/sdk-python/archive/add-kafka-protocol.tar.gz"
+  "cloudevents",
+   # "https://github.com/davidwmartines/sdk-python/archive/add-kafka-protocol.tar.gz"
 ]
 build-backend = "hatchling.build"
 

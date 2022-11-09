@@ -2,8 +2,9 @@ import logging
 
 import djclick as click
 from confluent_kafka import Consumer
-from django.conf import settings
 from django.utils.module_loading import import_string
+
+from ...conf import events_conf
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +18,10 @@ logger = logging.getLogger(__name__)
 def command(topic, consumer_group_id, handler, allow_errors, initial_offset):
 
     logger.info("Starting consumer")
+
+    conf = events_conf()
+    if not conf.bootstrap_servers:
+        raise ValueError("EVENTS.BOOTSTRAP_SERVERS not configured in settings.")
 
     auto_commit = False
 
@@ -34,7 +39,7 @@ def command(topic, consumer_group_id, handler, allow_errors, initial_offset):
 
     consumer = Consumer(
         {
-            "bootstrap.servers": settings.KAFKA_BOOTSTRAP_SERVERS,
+            "bootstrap.servers": conf.bootstrap_servers,
             "group.id": consumer_group_id,
             "auto.offset.reset": "earliest",
             "enable.auto.commit": auto_commit,
@@ -56,6 +61,7 @@ def command(topic, consumer_group_id, handler, allow_errors, initial_offset):
             topic_partition.offset = initial_offset
             consumer.seek(topic_partition)
 
+    logger.info(f"starting consume loop")
     while True:
         msg = consumer.poll(1.0)
         if msg is None:

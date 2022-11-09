@@ -1,13 +1,9 @@
-from events.handlers import EventHandler
-from events.serializers import EventSerializer
+from events.handlers import GenericEventHandler
+from events import create_event
 from events.models import OutboxItem
-from events import Event, parse_date
-from uuid import uuid4
-
-from django.conf import settings
 
 
-class BalanceSheetCDCSchemaConverter(EventHandler):
+class BalanceSheetCDCSchemaConverter(GenericEventHandler):
     """
     This event handler consumes the balance-sheet events
     from the private topic created by the change-data-capture
@@ -15,37 +11,27 @@ class BalanceSheetCDCSchemaConverter(EventHandler):
     schema, and sends to the public topic.
     """
 
-    target_topic = "public_balance_sheet_entity_events"
-    target_schema = "balance_sheet.avsc"
-
     def __init__(self) -> None:
         super().__init__()
-        self._reserializer = EventSerializer(
-            schema=self.target_schema, topic=self.target_topic
-        )
 
-    def handle(self, event: Event) -> None:
+    def handle(self, data: dict, headers: dict) -> None:
 
-        # create a new event in the canonical schema, based on the incoming data
-        new_event = Event(
-            id=uuid4(),
-            source=settings.EVENTS_SOURCE_NAME,
-            event_type="balance_sheet_created",
-            time=parse_date(event["date_calculated"]),
+        # Create a CloudEvent from the incoming message data.
+        # In this case the fields are identical, but typically
+        # the target event type would have a different schema
+        # than the source table.
+        event = create_event(
+            "balance_sheet_created",
             data=dict(
-                id=event["id"],
-                date_calculated=event["date_calculated"],
-                person_id=event["person_id"],
-                assets=event["assets"],
-                liabilities=event["liabilities"],
+                id=data["id"],
+                date_calculated=data["date_calculated"],
+                person_id=data["person_id"],
+                assets=data["assets"],
+                liabilities=data["liabilities"],
             ),
+            key=data["id"],
         )
 
         # save it to the outbox
-        outbox_item = OutboxItem.from_event(
-            new_event,
-            topic=self.target_topic,
-            key=event["id"],
-            serializer=self._reserializer,
-        )
+        outbox_item = OutboxItem.from_event(event)
         outbox_item.save()
