@@ -71,7 +71,7 @@ class OutboxItem(models.Model):
         return OutboxItem(
             id=UUID(event["id"]),
             topic=events_conf().types[event["type"]].topic,
-            message_key=getattr(protocol_event, "key"),
+            message_key=protocol_event.key,
             timestamp=datetime.fromisoformat(event["time"]),
             event_type=event["type"],
             source=event["source"],
