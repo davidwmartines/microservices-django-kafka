@@ -1,26 +1,26 @@
-from datetime import datetime, timezone
-from typing import NamedTuple
-from uuid import UUID, uuid4
+from datetime import datetime
+
+from cloudevents import http
+from cloudevents.abstract import AnyCloudEvent
+
+from .conf import events_conf
 
 
-class Event(NamedTuple):
+def create_event(
+    type: str, data: dict or object, key: str or bytes = None
+) -> AnyCloudEvent:
     """
-    A CloudEvents-spec event occurrence.
+    Utility function for creating a CloudEvent to be produced.
     """
 
-    id: UUID
-    type: str
-    time: datetime
-    data: dict or object
-    source: str = ""
-
-
-def create_event(type: str, data: dict or object, source="") -> Event:
-    """
-    Utility function for creating an Event to be produced.
-    """
-    return Event(
-        id=uuid4(), type=type, time=datetime.now(timezone.utc), data=data, source=source
+    # id and time are automatically set by CloudEvent
+    return http.CloudEvent.create(
+        {
+            "source": events_conf().event_source_name,
+            "type": type,
+            "key": key,
+        },
+        data,
     )
 
 

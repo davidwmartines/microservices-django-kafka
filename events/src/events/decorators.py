@@ -60,7 +60,5 @@ def save_event(config: Config):
 
 
 def _create_outbox_item(model: object, config: Config) -> OutboxItem:
-    event = create_event(config.type, config.to_dict(model))
-    return OutboxItem.from_event(
-        event, key_mapper=lambda e: str(model.pk)
-    )
+    event = create_event(config.type, data=config.to_dict(model), key=str(model.pk))
+    return OutboxItem.from_event(event)

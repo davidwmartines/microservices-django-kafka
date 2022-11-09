@@ -12,7 +12,7 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "testapp",
-    "events"
+    "events",
 ]
 
 ROOT_URLCONF = __name__

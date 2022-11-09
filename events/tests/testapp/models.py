@@ -3,6 +3,7 @@ from events.decorators import save_event, Config
 
 from uuid import uuid4
 
+
 @save_event(
     Config(
         type="widget_event",

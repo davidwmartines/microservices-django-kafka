@@ -41,15 +41,16 @@ class OutboxItemTestCase(TestCase):
                     "author": "bartsimpson",
                     "opened_on": datetime(2000, 1, 1, tzinfo=timezone.utc).isoformat(),
                 },
+                key="12345",
             )
 
-            item = OutboxItem.from_event(event, key_mapper=lambda e: str(12345))
+            item = OutboxItem.from_event(event)
 
-            self.assertEqual(item.id, event.id)
+            self.assertEqual(str(item.id), event["id"])
             self.assertEqual(item.content_type, "application/avro")
             self.assertEqual(item.event_type, "com.github.pullrequest.opened")
             self.assertEqual(item.message_key, "12345")
             self.assertEqual(item.source, "my-app")
             self.assertEqual(item.topic, "pull_requests")
-            self.assertEqual(item.timestamp, event.time)
+            self.assertEqual(item.timestamp.isoformat(), event["time"])
             self.assertIsInstance(item.payload, bytes)

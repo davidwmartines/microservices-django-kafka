@@ -78,24 +78,6 @@ class EventsConfTestCase(TestCase):
                 conf.types["an.event.type"].mode, CloudEventsMode.STRUCTURED
             )
 
-    def test_raises_key_error_when_schema_not_specified(self):
-        with self.settings(
-            EVENTS={
-                "TYPES": [
-                    {
-                        "NAME": "an.event.type",
-                        "TOPIC": "my-topic",
-                    },
-                ],
-                "DEFAULTS": {"FORMAT": "avro", "MODE": "binary"},
-                "SCHEMA_REGISTRY_URL": "http://schema-registry:8081",
-                "EVENT_SOURCE_NAME": "my-app",
-            }
-        ):
-
-            with self.assertRaises(KeyError):
-                events_conf()
-
     def test_raises_key_error_when_name_not_specified(self):
         with self.settings(
             EVENTS={

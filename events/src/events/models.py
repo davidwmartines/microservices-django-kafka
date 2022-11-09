@@ -1,7 +1,8 @@
+from uuid import UUID
+from datetime import datetime
 from django.db import models
-from . import Event
-from .conversion.factory import get_converter
-from typing import Callable
+from cloudevents.abstract import AnyCloudEvent
+from .conversion import to_protocol
 from .conf import events_conf
 
 
@@ -60,27 +61,20 @@ class OutboxItem(models.Model):
         app_label = "events"
 
     @classmethod
-    def from_event(
-        cls,
-        event: Event,
-        to_dict: Callable[[object], dict] = None,
-        key_mapper: Callable[[Event], str or bytes] = None,
-    ):
+    def from_event(cls, event: AnyCloudEvent):
         """
         Utility function for creating an OutboxItem from an event instance.
         """
 
-        converter = get_converter(event)
-
-        protocol_event = converter(event, to_dict=to_dict, key_mapper=key_mapper)
+        protocol_event = to_protocol(event)
 
         return OutboxItem(
-            id=event.id,
-            topic=getattr(protocol_event, "topic"),
+            id=UUID(event["id"]),
+            topic=events_conf().types[event["type"]].topic,
             message_key=getattr(protocol_event, "key"),
-            timestamp=event.time,
-            event_type=event.type,
-            source=event.source or events_conf().event_source_name,
-            content_type=protocol_event.headers.get("content-type"),
-            payload=protocol_event.body,
+            timestamp=datetime.fromisoformat(event["time"]),
+            event_type=event["type"],
+            source=event["source"],
+            content_type=protocol_event.headers.get("content-type").decode(),
+            payload=protocol_event.value,
         )
