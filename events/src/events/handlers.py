@@ -7,14 +7,14 @@ from confluent_kafka.schema_registry.avro import AvroDeserializer
 from confluent_kafka.serialization import MessageField, SerializationContext
 from django.conf import settings
 
-from events import Event, from_binary
+from . import Event
 
 logger = logging.getLogger(__name__)
 
 
 class EventHandler(ABC):
     """
-    Base class for handlers of Avro-serialized, CloudEvents-spec compliant event messages from Kafka.
+    Base class for handlers of CloudEvents-spec compliant event messages from Kafka.
 
     EventHandler instances are Callable.
     """
