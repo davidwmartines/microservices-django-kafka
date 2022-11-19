@@ -1,6 +1,9 @@
+from uuid import UUID
+from datetime import datetime
 from django.db import models
-from events import Event
-from typing import Callable
+from cloudevents.abstract import AnyCloudEvent
+from .conversion import to_protocol
+from .conf import events_conf
 
 
 class OutboxItem(models.Model):
@@ -54,27 +57,24 @@ class OutboxItem(models.Model):
     (envelope and data).
     """
 
+    class Meta:
+        app_label = "events"
+
     @classmethod
-    def from_event(
-        cls,
-        event: Event,
-        topic: str,
-        key: str,
-        serializer: Callable[[dict], str or bytes],
-    ):
+    def from_event(cls, event: AnyCloudEvent):
         """
         Utility function for creating an OutboxItem from an event instance.
         """
 
-        payload = serializer(event.data)
+        protocol_event = to_protocol(event)
 
         return OutboxItem(
-            id=event.id,
-            topic=topic,
-            message_key=key,
-            timestamp=event.time,
-            event_type=event.type,
-            source=event.source,
-            content_type="application/avro",
-            payload=payload,
+            id=UUID(event["id"]),
+            topic=events_conf().types[event["type"]].topic,
+            message_key=protocol_event.key,
+            timestamp=datetime.fromisoformat(event["time"]),
+            event_type=event["type"],
+            source=event["source"],
+            content_type=protocol_event.headers.get("content-type").decode(),
+            payload=protocol_event.value,
         )

@@ -1,0 +1,30 @@
+{
+    "namespace": "example",
+    "name": "PullRequest",
+    "type": "record",
+    "doc": "Represents the a pull request",
+    "fields": [
+      {
+        "name": "id",
+        "type": "long"
+      },
+      {
+        "name": "url",
+        "type": "string"
+      },
+      {
+        "name": "title",
+        "type": "string"
+      },
+      {
+        "name": "author",
+        "type": "string"
+      },
+      {
+        "name": "opened_on",
+        "type": "string",
+        "logicalType": "timestamp-millis"
+      }
+    ]
+  }
+  

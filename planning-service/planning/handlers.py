@@ -1,15 +1,16 @@
 import logging
 from uuid import UUID
 
-from events import Event, parse_date
-from events.handlers import EventHandler
+from cloudevents.abstract import AnyCloudEvent
+from events import parse_date
+from events.handlers import CloudEventHandler
 
 from planning.models import BalanceSheet, Person
 
 logger = logging.getLogger(__name__)
 
 
-class PersonEventHandler(EventHandler):
+class PersonEventHandler(CloudEventHandler):
     """
     Handles Person events from Kafka
     by upserting a record into this service's local database.
@@ -18,9 +19,10 @@ class PersonEventHandler(EventHandler):
     schema defined in the specified avsc file.
     """
 
-    schema_file_name = "person.avsc"
+    def __init__(self) -> None:
+        super().__init__(event_name="person_entity_state")
 
-    def handle(self, event: Event) -> None:
+    def handle(self, event: AnyCloudEvent) -> None:
 
         data = event.data
 
@@ -35,15 +37,16 @@ class PersonEventHandler(EventHandler):
         logger.info(f"persisted record for person {obj.id}. created: {created}")
 
 
-class BalanceSheetEventHandler(EventHandler):
+class BalanceSheetEventHandler(CloudEventHandler):
     """
     Handles BalanceSheet events from Kafka
     by creating a balance sheet record in this service's local database.
     """
 
-    schema_file_name = "balance_sheet.avsc"
+    def __init__(self) -> None:
+        super().__init__(event_name="balance_sheet_created")
 
-    def handle(self, event: Event) -> None:
+    def handle(self, event: AnyCloudEvent) -> None:
         data = event.data
 
         person_id = UUID(data["person_id"])

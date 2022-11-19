@@ -163,8 +163,17 @@ LOGGING = {
 
 SESSION_COOKIE_NAME = "accounting-service"
 
-SCHEMA_REGISTRY_URL = env("SCHEMA_REGISTRY_URL")
-EVENTS_SOURCE_NAME = "accounting-service"
-EVENTS_SCHEMAS_DIR = "schemas"
-
-KAFKA_BOOTSTRAP_SERVERS = env("KAFKA_BOOTSTRAP_SERVERS")
+EVENTS = {
+    "TYPES": [
+        {
+            "NAME": "balance_sheet_created",
+            "SCHEMA": "balance_sheet.avsc",
+            "TOPIC": "public_balance_sheet_entity_events",
+        }
+    ],
+    "DEFAULTS": {"FORMAT": "avro", "MODE": "binary"},
+    "SCHEMA_REGISTRY_URL": env("SCHEMA_REGISTRY_URL"),
+    "BOOTSTRAP_SERVERS": env("KAFKA_BOOTSTRAP_SERVERS"),
+    "SCHEMAS_DIR": "schemas",
+    "EVENT_SOURCE_NAME": "accounting-service",
+}

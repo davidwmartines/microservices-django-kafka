@@ -2,8 +2,7 @@ from typing import Callable, NamedTuple
 
 from django.db import transaction
 
-from events.models import OutboxItem
-from events.serializers import EventSerializer
+from .models import OutboxItem
 
 from . import create_event
 
@@ -14,17 +13,7 @@ class Config(NamedTuple):
     from model instances using save_event decorator.
     """
 
-    schema: str
-    """
-    Name of the schema to use.
-    """
-
-    topic: str
-    """
-    The topic name (subject) the schema will be registred to.
-    """
-
-    event_type: str
+    type: str
     """
     The type of event to generate.
     """
@@ -70,17 +59,6 @@ def save_event(config: Config):
     return decorator_save_event
 
 
-_serializers = {}
-
-
 def _create_outbox_item(model: object, config: Config) -> OutboxItem:
-    serializer = _serializers.get(config.schema)
-    if not serializer:
-        serializer = EventSerializer(schema=config.schema, topic=config.topic)
-        _serializers[config.schema] = serializer
-
-    event = create_event(config.event_type, config.to_dict(model))
-
-    return OutboxItem.from_event(
-        event, topic=config.topic, key=model.pk, serializer=serializer
-    )
+    event = create_event(config.type, data=config.to_dict(model), key=str(model.pk))
+    return OutboxItem.from_event(event)
