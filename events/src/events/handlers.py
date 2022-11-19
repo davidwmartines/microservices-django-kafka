@@ -4,7 +4,7 @@ import typing
 from abc import ABC, abstractmethod
 
 from cloudevents.abstract import AnyCloudEvent
-from cloudevents.kafka import ProtocolMessage
+from cloudevents.kafka import KafkaMessage
 from confluent_kafka import Message
 from confluent_kafka.schema_registry import SchemaRegistryClient
 from confluent_kafka.schema_registry.avro import AvroDeserializer
@@ -58,7 +58,7 @@ class CloudEventHandler(ABC):
         )
 
         event = to_cloudevent(
-            ProtocolMessage(
+            KafkaMessage(
                 _get_headers(message), key=message.key().decode(), value=message.value()
             ),
             self._event_name,
@@ -124,7 +124,7 @@ class GenericEventHandler(ABC):
             f"handling message key {message.key().decode()} topic {message.topic()}"
         )
 
-        data = self.deserializer(
+        data = self._deserializer(
             message.value(),
             SerializationContext(message.topic(), MessageField.VALUE),
         )

@@ -18,7 +18,7 @@ def create_event(
         {
             "source": events_conf().event_source_name,
             "type": type,
-            "key": key,
+            "partitionkey": key,
         },
         data,
     )
