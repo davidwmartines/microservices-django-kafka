@@ -6,7 +6,7 @@
   "fields": [
     {
       "name": "id",
-      "type": "string"
+      "type": {"type": "string", "logicalType": "uuid"}
     },
     {
       "name": "first_name",
@@ -18,8 +18,7 @@
     },
     {
       "name": "date_of_birth",
-      "type": "string",
-      "logicalType": "date"
+      "type": {"type": "int", "logicalType": "date"}
     }
   ]
 }

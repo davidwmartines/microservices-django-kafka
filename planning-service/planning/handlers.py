@@ -1,11 +1,10 @@
 import logging
-from uuid import UUID
+from datetime import datetime
 
 from cloudevents.abstract import AnyCloudEvent
-from events import parse_date
-from events.handlers import CloudEventHandler
-
 from planning.models import BalanceSheet, Person
+
+from events.handlers import CloudEventHandler
 
 logger = logging.getLogger(__name__)
 
@@ -27,9 +26,9 @@ class PersonEventHandler(CloudEventHandler):
         data = event.data
 
         obj, created = Person.objects.update_or_create(
-            id=UUID(data["id"]),
+            id=data["id"],
             defaults={
-                "date_of_birth": parse_date(data["date_of_birth"])
+                "date_of_birth": data["date_of_birth"]
                 if "date_of_birth" in data
                 else None,
             },
@@ -49,7 +48,7 @@ class BalanceSheetEventHandler(CloudEventHandler):
     def handle(self, event: AnyCloudEvent) -> None:
         data = event.data
 
-        person_id = UUID(data["person_id"])
+        person_id = data["person_id"]
 
         if not Person.objects.filter(pk=person_id).exists():
             raise Exception(f"unknown person {person_id}")
@@ -58,12 +57,12 @@ class BalanceSheetEventHandler(CloudEventHandler):
         # immutable instances.  However, using update_or_create to safely handle
         # duplicate events.
         obj, created = BalanceSheet.objects.update_or_create(
-            id=UUID(data["id"]),
+            id=data["id"],
             defaults={
                 "person_id": person_id,
-                "date_calculated": parse_date(data["date_calculated"]),
-                "assets": int(data["assets"]),
-                "liabilities": int(data["liabilities"]),
+                "date_calculated": datetime.fromtimestamp(data["date_calculated"]),
+                "assets": data["assets"],
+                "liabilities": data["liabilities"],
             },
         )
         logger.info(

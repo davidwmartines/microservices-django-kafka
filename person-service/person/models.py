@@ -13,10 +13,10 @@ def demo_date_of_birth():
     Config(
         type="person_entity_state",
         to_dict=lambda o: dict(
-            id=str(o.id),
+            id=o.id,
             first_name=o.first_name,
             last_name=o.last_name,
-            date_of_birth=o.date_of_birth.isoformat(),
+            date_of_birth=o.date_of_birth,
         ),
     )
 )

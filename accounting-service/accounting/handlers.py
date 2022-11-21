@@ -1,5 +1,8 @@
+from datetime import datetime
+from uuid import UUID
+
+from events import create_event, parse_date
 from events.handlers import GenericEventHandler
-from events import create_event
 from events.models import OutboxItem
 
 
@@ -17,17 +20,18 @@ class BalanceSheetCDCSchemaConverter(GenericEventHandler):
     def handle(self, data: dict, headers: dict) -> None:
 
         # Create a CloudEvent from the incoming message data.
-        # In this case the fields are identical, but typically
+        # In this case the fields are identically named, but typically
         # the target event type would have a different schema
         # than the source table.
+        # Note the type conversions needed.
         event = create_event(
             "balance_sheet_created",
             data=dict(
-                id=data["id"],
-                date_calculated=data["date_calculated"],
-                person_id=data["person_id"],
-                assets=data["assets"],
-                liabilities=data["liabilities"],
+                id=UUID(data["id"]),
+                date_calculated=datetime.timestamp(parse_date(data["date_calculated"])),
+                person_id=UUID(data["person_id"]),
+                assets=int(data["assets"]),
+                liabilities=int(data["liabilities"]),
             ),
             key=data["id"],
         )

@@ -6,16 +6,15 @@
   "fields": [
     {
       "name": "id",
-      "type": "string"
+      "type": {"type": "string", "logicalType": "uuid"}
     },
     {
       "name": "person_id",
-      "type": "string"
+      "type": {"type": "string", "logicalType": "uuid"}
     },
     {
       "name": "date_calculated",
-      "type": "string",
-      "logicalType": "timestamp-millis"
+      "type": {"type": "int", "logicalType": "timestamp-millis"}
     },
     {
       "name": "assets",
