@@ -1,5 +1,4 @@
 import logging
-from datetime import datetime
 
 from cloudevents.abstract import AnyCloudEvent
 from planning.models import BalanceSheet, Person
@@ -60,7 +59,7 @@ class BalanceSheetEventHandler(CloudEventHandler):
             id=data["id"],
             defaults={
                 "person_id": person_id,
-                "date_calculated": datetime.fromtimestamp(data["date_calculated"]),
+                "date_calculated": data["date_calculated"],
                 "assets": data["assets"],
                 "liabilities": data["liabilities"],
             },

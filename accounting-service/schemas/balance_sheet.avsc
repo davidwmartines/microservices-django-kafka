@@ -14,7 +14,7 @@
     },
     {
       "name": "date_calculated",
-      "type": {"type": "int", "logicalType": "timestamp-millis"}
+      "type": {"type": "long", "logicalType": "timestamp-millis"}
     },
     {
       "name": "assets",

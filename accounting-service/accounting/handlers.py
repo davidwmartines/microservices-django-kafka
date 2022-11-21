@@ -1,4 +1,3 @@
-from datetime import datetime
 from uuid import UUID
 
 from events import create_event, parse_date
@@ -28,7 +27,7 @@ class BalanceSheetCDCSchemaConverter(GenericEventHandler):
             "balance_sheet_created",
             data=dict(
                 id=UUID(data["id"]),
-                date_calculated=datetime.timestamp(parse_date(data["date_calculated"])),
+                date_calculated=parse_date(data["date_calculated"]),
                 person_id=UUID(data["person_id"]),
                 assets=int(data["assets"]),
                 liabilities=int(data["liabilities"]),
