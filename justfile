@@ -1,14 +1,14 @@
 # rebuild images
 build:
-    docker-compose build
+    docker compose build
 
 # start up
 start:
-    docker-compose up
+    docker compose up
 
 # shut down and terminate the stack
 terminate:
-    docker-compose down
+    docker compose down
 
 # initialize the Django services.  Performs database migrations and creates a superuser account in each.
 init-services:
@@ -20,15 +20,15 @@ init-ksqldb:
 
 # shell into a person service container
 shell-person:
-    docker-compose run --rm person-service-web bash
+    docker compose run --rm person-service-web bash
 
 # shell into a person service container
 shell-planning:
-    docker-compose run --rm planning-service-web bash
+    docker compose run --rm planning-service-web bash
 
 # shell into an accounting service container
 shell-accounting:
-    docker-compose run --rm accounting-service-web bash
+    docker compose run --rm accounting-service-web bash
 
 # psql into the postgres service container
 psql:
