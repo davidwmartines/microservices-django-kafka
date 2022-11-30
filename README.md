@@ -47,14 +47,16 @@ just init-ksqldb
 ---
 #### Linux Environment Notes
 
+Install docker-compose-plugin.
+
 The sh scripts may require exec permissions:
 ```sh
-chmod +x wait-for-it.sh 
+chmod +x initialize_services.sh
 ```
 
 You may need to run the just commands with `sudo`  in order to run docker commands, e.g.:
 ```sh
-sudo just up
+sudo just start
 ```
 
 ---
