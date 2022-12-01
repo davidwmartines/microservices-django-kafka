@@ -101,6 +101,7 @@ services:
       - ./ksqldb/project:/project
 
   accounting-service-web:
+    container_name: accounting-web
     build: 
       context: .
       dockerfile: ./accounting-service/Dockerfile
@@ -121,8 +122,13 @@ services:
     depends_on:
       - postgres
     restart: always
+    healthcheck:
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:8002/health/
+      interval: 10s
+      retries: 5
 
   accounting-service-cdc-consumer:
+    container_name: accounting-consumer-cdc
     build:
       context: .
       dockerfile: ./accounting-service/Dockerfile
@@ -145,6 +151,7 @@ services:
     restart: always
 
   person-service-web:
+    container_name: person-web
     build: 
       context: .
       dockerfile: ./person-service/Dockerfile
@@ -165,8 +172,13 @@ services:
     depends_on:
       - postgres
     restart: always
+    healthcheck:
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:8001/health/
+      interval: 10s
+      retries: 5
 
   planning-service-web:
+    container_name: planning-web
     build: 
       context: .
       dockerfile: ./planning-service/Dockerfile
@@ -187,8 +199,13 @@ services:
     depends_on:
       - postgres
     restart: always
+    healthcheck:
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:8003/health/
+      interval: 10s
+      retries: 5
 
   planning-service-person-consumer:
+    container_name: planning-consumer-p
     build: 
       context: .
       dockerfile: ./planning-service/Dockerfile
@@ -211,6 +228,7 @@ services:
     restart: always
 
   planning-service-balance-sheet-consumer:
+    container_name: planning-consumer-b
     build: 
       context: .
       dockerfile: ./planning-service/Dockerfile

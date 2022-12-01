@@ -1,6 +1,6 @@
 FROM python:3.9.15-slim-buster
 
-RUN apt-get update && apt-get -y install gcc
+RUN apt-get update && apt-get -y install gcc && apt-get -y install curl
 
 RUN pip install -U pip
 
