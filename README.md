@@ -29,7 +29,7 @@ The example set of services are run together in a single docker compose stack.  
 ### Start up the stack:
 
 ```sh
-just up
+just start
 ```
 Leave this console running.  In a separate console, run the two following initialization scripts.
 
