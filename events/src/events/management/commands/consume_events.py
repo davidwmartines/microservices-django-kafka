@@ -62,7 +62,7 @@ def command(topic, consumer_group_id, handler, allow_errors, initial_offset):
             topic_partition.offset = initial_offset
             consumer.seek(topic_partition)
 
-    logger.info(f"starting consume loop")
+    logger.info("starting consume loop")
     while True:
         msg = consumer.poll(1.0)
         if msg is None:

@@ -8,12 +8,14 @@ class CloudEventsMode(str, Enum):
 
     BINARY = "binary"
     """
-    The event data is passed as the body or value, and the cloud events envelope fields are passed as headers.
+    The event data is passed as the body or value, and the cloud events envelope fields
+    are passed as headers.
     """
 
     STRUCTURED = "structured"
     """
-    The body of the message specfies both the cloud events envelope fields and the event data as the `data` field.
+    The body of the message specfies both the cloud events envelope fields and the event
+    data as the `data` field.
     """
 
 

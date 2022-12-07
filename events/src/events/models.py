@@ -28,7 +28,8 @@ class OutboxItem(models.Model):
     """
     Value passed to the Debezium Outbox Event Router to set the KEY on
     messages to Kafka.
-    This should almost always be the ID of the entity instance related the event occurrence.
+    This should almost always be the ID of the entity instance related the event
+    occurrence.
     """
 
     timestamp = models.DateTimeField(null=False)

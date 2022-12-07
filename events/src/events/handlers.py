@@ -38,11 +38,12 @@ class CloudEventHandler(ABC):
     @abstractmethod
     def handle(self, event: AnyCloudEvent) -> None:
         """
-        Template method for subclasses to perform their handling of specific event types.
+        Template method for subclasses to perform their handling of specific event
+        types.
 
         Arguments:
-            event (Event): a deserialized Event instance.  Handlers will typically use the `data` attribute
-            to access the event-type sepcific payload.
+            event (Event): a deserialized Event instance.  Handlers will typically use
+            the `data` attribute to access the event-type sepcific payload.
         """
         raise NotImplementedError()
 
@@ -84,7 +85,8 @@ class GenericEventHandler(ABC):
     @abstractmethod
     def handle(self, data: dict, headers: dict) -> None:
         """
-        Template method for subclasses to perform their handling of specific event types.
+        Template method for subclasses to perform their handling of specific event
+        types.
 
         Arguments:
             data (dict): a deserialized dictionary of the event payload.

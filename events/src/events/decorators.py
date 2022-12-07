@@ -31,7 +31,8 @@ def save_event(config: Config):
     transactionally saving an event to the outbox table.
 
     Arguments:
-        config (Config): a config object that specifies how to create events from the model on save.
+        config (Config): a config object that specifies how to create events from the
+        model on save.
 
     Note:
         Inspired by https://github.com/juntossomosmais/django-outbox-pattern
@@ -40,13 +41,14 @@ def save_event(config: Config):
     def save(self, *args, **kwargs):
         # Note, the event and outbox item are created before the transaction begins.
         # This is so that the serialization is not happening during the db transaction.
-        # The serialization process may need to make an API call to Schema-Registry on the
-        # first invocation to get/register the schema, and we don't want that IO to be blocking
-        # the transaction.
-        # The downside is that we don't have access to the model fields that are generated
-        # at save time such as as created and modified.
-        # If the serialization could be optimized to not require any IO, the creation of the
-        # event and outbox item could be moved inside the transaction, after saving the model.
+        # The serialization process may need to make an API call to Schema-Registry on
+        # the first invocation to get/register the schema, and we don't want that IO to
+        # be blocking the transaction.
+        # The downside is that we don't have access to the model fields that are
+        # generated at save time such as as created and modified.
+        # If the serialization could be optimized to not require any IO, the creation of
+        # the event and outbox item could be moved inside the transaction, after saving
+        # the model.
         outbox_item = _create_outbox_item(self, config)
         with transaction.atomic():
             super(self.__class__, self).save(*args, **kwargs)
