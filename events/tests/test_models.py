@@ -8,7 +8,6 @@ from events.models import OutboxItem
 
 class OutboxItemTestCase(TestCase):
     def test_create_from_event(self):
-
         with self.settings(
             EVENTS={
                 "TYPES": [
@@ -24,7 +23,6 @@ class OutboxItemTestCase(TestCase):
                 "SCHEMAS_DIR": "tests/schemas",
             }
         ), responses.RequestsMock(assert_all_requests_are_fired=False) as resp:
-
             resp.add(
                 resp.POST,
                 "http://schema-registry:8081/subjects/pull_requests-value/versions",

@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("events", "0002_rename_type_event_event_type_event_content_type_and_more"),
     ]

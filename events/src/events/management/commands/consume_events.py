@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 @click.option("--allow_errors", is_flag=True, default=False)
 @click.option("--initial_offset", default=0)
 def command(topic, consumer_group_id, handler, allow_errors, initial_offset):
-
     logger.info("Starting consumer")
 
     conf = events_conf()
@@ -27,7 +26,9 @@ def command(topic, consumer_group_id, handler, allow_errors, initial_offset):
 
     if allow_errors:
         logger.warning(
-            "RUNNING IN ALLOW_ERRORS MODE!  Not all events are guaranteed to be handled succesfully, but offsets will be comitted.  Any handler errors will be logged."
+            """RUNNING IN ALLOW_ERRORS MODE!  Not all events are guaranteed to be
+            handled succesfully, but offsets will be comitted.  Any handler errors
+            will be logged."""
         )
         auto_commit = True
 
@@ -76,7 +77,8 @@ def command(topic, consumer_group_id, handler, allow_errors, initial_offset):
                 handler_instance(msg)
             except Exception as ex:
                 logger.error(
-                    f"Exception handling message from partition {msg.partition()}, offset: {msg.offset()}.  Headers: {msg.headers()} {str(ex)}",
+                    f"""Exception handling message from partition {msg.partition()},
+                    offset: {msg.offset()}.  Headers: {msg.headers()} {str(ex)}""",
                     exc_info=str(ex),
                 )
                 if not allow_errors:

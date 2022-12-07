@@ -23,7 +23,6 @@ class SaveEventDecorator(TestCase):
             },
             USE_TZ=True,
         ), responses.RequestsMock(assert_all_requests_are_fired=False) as resp:
-
             resp.add(
                 resp.POST,
                 "http://schema-registry:8081/subjects/widgets-value/versions",

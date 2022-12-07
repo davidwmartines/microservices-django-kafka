@@ -65,7 +65,8 @@ class CloudEventHandler(ABC):
         )
 
         logger.debug(
-            f"successfully deserialized {event['type']} event id {event['id']} from {event['source']}."
+            f"successfully deserialized {event['type']} event id {event['id']} from"
+            f" {event['source']}."
         )
 
         self.handle(event)
@@ -94,7 +95,6 @@ class GenericEventHandler(ABC):
     def __init__(
         self, deserializer_type: type = AvroDeserializer, schema_file_name: str = None
     ) -> None:
-
         conf = events_conf()
 
         schema_string = None

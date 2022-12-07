@@ -63,7 +63,6 @@ class EventsConfTestCase(TestCase):
                 "EVENT_SOURCE_NAME": "my-app",
             }
         ):
-
             conf = events_conf()
             self.assertEqual(1, len(conf.types))
             self.assertTrue("an.event.type" in conf.types)
@@ -92,7 +91,6 @@ class EventsConfTestCase(TestCase):
                 "EVENT_SOURCE_NAME": "my-app",
             }
         ):
-
             with self.assertRaises(KeyError):
                 events_conf()
 
@@ -110,7 +108,6 @@ class EventsConfTestCase(TestCase):
                 "EVENT_SOURCE_NAME": "my-app",
             }
         ):
-
             with self.assertRaises(KeyError):
                 events_conf()
 

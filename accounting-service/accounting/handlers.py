@@ -17,7 +17,6 @@ class BalanceSheetCDCSchemaConverter(GenericEventHandler):
         super().__init__()
 
     def handle(self, data: dict, headers: dict) -> None:
-
         # Create a CloudEvent from the incoming message data.
         # In this case the fields are identically named, but typically
         # the target event type would have a different schema

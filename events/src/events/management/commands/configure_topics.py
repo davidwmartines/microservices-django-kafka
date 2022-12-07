@@ -50,7 +50,6 @@ def _create_topics(configs: dict) -> None:
 
 
 def _register_schemas(configs: dict) -> None:
-
     schema_registry_client = SchemaRegistryClient({"url": settings.SCHEMA_REGISTRY_URL})
 
     for config in configs:

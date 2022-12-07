@@ -21,7 +21,6 @@ class PersonEventHandler(CloudEventHandler):
         super().__init__(event_name="person_entity_state")
 
     def handle(self, event: AnyCloudEvent) -> None:
-
         data = event.data
 
         obj, created = Person.objects.update_or_create(
@@ -65,5 +64,6 @@ class BalanceSheetEventHandler(CloudEventHandler):
             },
         )
         logger.info(
-            f"persisted balance sheet {obj.id} for person {person_id}. created: {created}"
+            f"persisted balance sheet {obj.id} for person {person_id}. created:"
+            f" {created}"
         )
