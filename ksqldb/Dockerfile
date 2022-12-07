@@ -30,3 +30,6 @@ RUN bin/confluent-hub install --no-prompt \
 # plugin: EnvVarConfigProvider
 RUN wget -c https://github.com/strimzi/kafka-env-var-config-provider/releases/download/1.0.0/kafka-env-var-config-provider-1.0.0.tar.gz -O - \
     | tar -xz -C /usr/share/kafka/plugins/
+
+
+LABEL name="ksqldb-server"
