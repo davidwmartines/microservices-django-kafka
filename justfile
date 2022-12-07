@@ -49,3 +49,8 @@ own:
 # start a console consumer on a topic
 consume topic:
     docker run -it --network microservices-django-kafka_default edenhill/kcat:1.7.0 -b kafka:9092 -C -t {{topic}} -f 'Topic %t [%p] at offset %o: key %k: headers %h: %s\n'
+
+
+# run black and flak8
+lint:
+    black --preview . && flake8 .
