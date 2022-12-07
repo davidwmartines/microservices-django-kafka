@@ -32,15 +32,15 @@ shell-accounting:
 
 # psql into the postgres service container
 psql:
-    docker container exec -it microservices-django-kafka_postgres_1 psql -U postgres
+    docker container exec -it postgres psql -U postgres
 
 # ksql shell
 ksql:
-    docker container exec -it microservices-django-kafka_ksqldb_1 ksql
+    docker container exec -it ksqldb ksql
 
 # schema-registry shell
 shell-schema-registry:
-    docker container exec -it microservices-django-kafka_schema-registry_1 bash
+    docker container exec -it schema-registry bash
 
 # take ownership of all the files, such as those created by docker
 own:
@@ -51,6 +51,6 @@ consume topic:
     docker run -it --network microservices-django-kafka_default edenhill/kcat:1.7.0 -b kafka:9092 -C -t {{topic}} -f 'Topic %t [%p] at offset %o: key %k: headers %h: %s\n'
 
 
-# run black and flak8
+# run black and flake8
 lint:
     black --preview . && flake8 .
