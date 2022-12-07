@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
     "health_check",
     "person",
     "events",
@@ -139,6 +140,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 SESSION_COOKIE_NAME = "person-service"
 
+REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
+}
 
 EVENTS = {
     "TYPES": [
