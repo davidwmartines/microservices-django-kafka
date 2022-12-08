@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import date
 
 
 class Person(models.Model):
@@ -15,6 +16,18 @@ class Person(models.Model):
     id = models.UUIDField(primary_key=True)
     date_of_birth = models.DateTimeField(null=True, blank=True)
 
+    @property
+    def age(self):
+        today = date.today()
+        return (
+            today.year
+            - self.date_of_birth.year
+            - (
+                (today.month, today.day)
+                < (self.date_of_birth.month, self.date_of_birth.day)
+            )
+        )
+
 
 class BalanceSheet(models.Model):
     """
@@ -26,6 +39,9 @@ class BalanceSheet(models.Model):
     date_calculated = models.DateTimeField(null=False)
     assets = models.BigIntegerField(null=False, default=0)
     liabilities = models.BigIntegerField(null=False, default=0)
+
+    def calculate_net_worth(self) -> int:
+        return self.assets - self.liabilities
 
     class Meta:
         ordering = ["person_id", "-date_calculated"]
