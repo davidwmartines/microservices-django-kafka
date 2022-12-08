@@ -20,7 +20,7 @@ curl -s -u $username:$password -H 'Accept: application/json; indent=4'\
     http://localhost:8002/api/balance-sheets/
 
 # wait for eventual consistency...
-sleep 1
+sleep 2
 
 # get financial planning data
 curl -H 'Accept: application/json; indent=4' -u $username:$password \
