@@ -16,10 +16,11 @@ class Person(models.Model):
     id = models.UUIDField(primary_key=True)
     date_of_birth = models.DateTimeField(null=True, blank=True)
 
-    def age(self, as_of: datetime = datetime.now(timezone.utc)):
+    def age(self, as_of: datetime = None):
         """
         Get the age in years, as of now or the provided date.
         """
+        as_of = as_of or datetime.now(timezone.utc)
         today = as_of.date()
         return (
             today.year

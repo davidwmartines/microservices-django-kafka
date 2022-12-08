@@ -2,6 +2,9 @@ from planning.models import Person
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from typing import NamedTuple
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class CalculatedRatio(NamedTuple):
@@ -49,12 +52,14 @@ class NetWorthToTotalAssets(FinancialRatioCalculator):
 
     __slots__ = "person", "as_of"
 
-    def __init__(
-        self, person: Person, as_of: datetime = datetime.now(timezone.utc)
-    ) -> None:
+    def __init__(self, person: Person, as_of: datetime = None) -> None:
         assert person
         self.person = person
-        self.as_of = as_of
+        self.as_of = as_of or datetime.now(timezone.utc)
+        logger.debug(
+            f"initialized NetWorthToTotalAssets for person {self.person.id} as of"
+            f" {self.as_of}"
+        )
 
     @property
     def name(self) -> str:
@@ -70,7 +75,7 @@ class NetWorthToTotalAssets(FinancialRatioCalculator):
         )
 
         if balance_sheet is None:
-            print(f"NO BALANCE SHEET as of {self.as_of}")
+            logger.warn(f"no balance sheet as of {self.as_of}")
             return None
 
         # get net worth
