@@ -1,6 +1,6 @@
 from planning.models import Person
 from abc import ABC, abstractmethod
-
+from datetime import datetime, timezone
 from typing import NamedTuple
 
 
@@ -47,11 +47,14 @@ class NetWorthToTotalAssets(FinancialRatioCalculator):
     Benchmark ratios for age ranges (mostly made up...)
     """
 
-    __slots__ = "person"
+    __slots__ = "person", "as_of"
 
-    def __init__(self, person: Person) -> None:
+    def __init__(
+        self, person: Person, as_of: datetime = datetime.now(timezone.utc)
+    ) -> None:
         assert person
         self.person = person
+        self.as_of = as_of
 
     @property
     def name(self) -> str:
@@ -60,10 +63,14 @@ class NetWorthToTotalAssets(FinancialRatioCalculator):
     @property
     def result(self) -> CalculatedRatio:
         # get latest balance sheet
-        balance_sheet = self.person.balancesheet_set.order_by(
-            "-date_calculated"
-        ).first()
+        balance_sheet = (
+            self.person.balancesheet_set.order_by("-date_calculated")
+            .filter(date_calculated__lte=self.as_of)
+            .first()
+        )
+
         if balance_sheet is None:
+            print(f"NO BALANCE SHEET as of {self.as_of}")
             return None
 
         # get net worth
@@ -78,7 +85,7 @@ class NetWorthToTotalAssets(FinancialRatioCalculator):
                 {
                     k: v
                     for (k, v) in self._benchmarks.items()
-                    if k[0] <= self.person.age <= k[1]
+                    if k[0] <= self.person.age(self.as_of) <= k[1]
                 }.items()
             ),
             None,
@@ -87,7 +94,7 @@ class NetWorthToTotalAssets(FinancialRatioCalculator):
 
         # evaluate
         if benchmark_ratio is not None:
-            if ratio <= benchmark_ratio:
+            if ratio < benchmark_ratio:
                 evaluation = "Needs improvement"
             else:
                 evaluation = "Good"

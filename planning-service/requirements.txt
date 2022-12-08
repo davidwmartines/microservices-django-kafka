@@ -28,3 +28,5 @@ confluent_kafka==1.9.2
 fastavro==1.6.1
 jsonschema==4.17.0
 cloudevents==1.7.0
+
+pytest-django==4.5.2

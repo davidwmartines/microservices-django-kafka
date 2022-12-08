@@ -1,5 +1,5 @@
 from django.db import models
-from datetime import date
+from datetime import date, datetime, timezone
 
 
 class Person(models.Model):
@@ -16,9 +16,11 @@ class Person(models.Model):
     id = models.UUIDField(primary_key=True)
     date_of_birth = models.DateTimeField(null=True, blank=True)
 
-    @property
-    def age(self):
-        today = date.today()
+    def age(self, as_of: datetime = datetime.now(timezone.utc)):
+        """
+        Get the age in years, as of now or the provided date.
+        """
+        today = as_of.date()
         return (
             today.year
             - self.date_of_birth.year
