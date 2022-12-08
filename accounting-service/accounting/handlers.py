@@ -1,6 +1,7 @@
 from uuid import UUID
+import dateutil.parser
 
-from events import create_event, parse_date
+from events import create_event
 from events.handlers import GenericEventHandler
 from events.models import OutboxItem
 
@@ -26,7 +27,7 @@ class BalanceSheetCDCSchemaConverter(GenericEventHandler):
             "balance_sheet_created",
             data=dict(
                 id=UUID(data["id"]),
-                date_calculated=parse_date(data["date_calculated"]),
+                date_calculated=dateutil.parser.isoparse(data["date_calculated"]),
                 person_id=UUID(data["person_id"]),
                 assets=int(data["assets"]),
                 liabilities=int(data["liabilities"]),

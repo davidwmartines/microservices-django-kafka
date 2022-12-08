@@ -1,3 +1,9 @@
-from django.shortcuts import render
+from accounting.models import BalanceSheet
+from accounting.serializers import BalanceSheetSerializer
+from rest_framework import permissions, viewsets
 
-# Create your views here.
+
+class BalanceSheetViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = BalanceSheet.objects.order_by("-date_calculated").all()
+    serializer_class = BalanceSheetSerializer
