@@ -50,7 +50,14 @@ own:
 consume topic:
     docker run -it --network microservices-django-kafka_default edenhill/kcat:1.7.0 -b kafka:9092 -C -t {{topic}} -f 'Topic %t [%p] at offset %o: key %k: headers %h: %s\n'
 
-
 # run black and flake8
 lint:
     black --preview . && flake8 .
+
+# run unit tests
+test:
+    #!/usr/bin/env bash
+    cd events
+    pytest
+    cd ..
+    sudo docker compose run --rm planning-service-web pytest
