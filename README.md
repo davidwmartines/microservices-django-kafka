@@ -51,7 +51,9 @@ Install docker-compose-plugin.
 
 The sh scripts may require exec permissions:
 ```sh
-chmod +x initialize_services.sh
+chmod +x ./initialize_services.sh
+chmod +x ./ksqldb/migrate.sh
+chmod +x ./demo.sh
 ```
 
 You may need to run the just commands with `sudo`  in order to run docker commands, e.g.:
@@ -63,11 +65,52 @@ sudo just start
 
 ## Demo
 
-1. Access the person service admin site at [http://localhost:8001/admin/](http://localhost:8001/admin/).
-2. Log in with username `root`, password `P@ssw0rd1`.
-3. Create some person entities.
+Run the `demo` script.
 
-4. Access the accounting service admin site at [http://localhost:8002/admin](http://localhost:8002/admin) (same root credentials to log in).
-5. Create some balance sheet entities.  For `Person id`, use `ID`s of persons that were created in the person service.
+This will:
 
-6.  Observe that the Planning Service's local `person` and `balance_sheet` tables are kept eventually consistent with the data from the person and accounting services.
+1. Create a person in the Person service, via its REST API.
+2. Create a balance-sheet for the person in the Accounting service, via its REST API.
+3. Call the `/ratios` API of the Planning service, to get financial planning ratio data for the person.
+
+### Example
+```sh
+$ ./demo.sh
+
+# create a person:
+person_id=$(curl -s -u $username:$password -H 'Accept: application/json; indent=4'\
+    -H 'Content-Type: application/json' \
+    -d '{"first_name": "Bart", "last_name": "Simpson", "date_of_birth": "1980-02-23T00:00:00Z"}' \
+    http://localhost:8001/api/persons/ | jq -r ".id")
+
+echo ${person_id}
+10cdc09d-757c-4e4f-96bc-367a7de72f70
+
+# create a balance sheet:
+curl -s -u $username:$password -H 'Accept: application/json; indent=4'\
+    -H 'Content-Type: application/json' \
+    -d '{"person_id": "'$person_id'",  "assets": 3340000, "liabilities": "537300"}' \
+    http://localhost:8002/api/balance-sheets/
+{
+    "id": "8ab01372-1e2e-493a-88b6-da171b116ef2",
+    "person_id": "10cdc09d-757c-4e4f-96bc-367a7de72f70",
+    "date_calculated": "2022-12-08T04:41:29.568289Z",
+    "assets": 3340000,
+    "liabilities": 537300
+}
+# wait for eventual consistency...
+sleep 1
+
+# get financial planning data
+curl -H 'Accept: application/json; indent=4' -u $username:$password \
+    http://localhost:8003/api/ratios/$person_id/
+[
+    {
+        "name": "Net Worth to Total Assets",
+        "result": {
+            "ratio": 0.8391317365269461,
+            "benchmark": 0.5,
+            "status": "Good"
+        }
+    }
+```
