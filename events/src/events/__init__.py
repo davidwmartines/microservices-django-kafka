@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from cloudevents import http
 from cloudevents.abstract import AnyCloudEvent
 
@@ -22,12 +20,3 @@ def create_event(
         },
         data,
     )
-
-
-def parse_date(val: str) -> datetime:
-    """
-    Handle different variations of datetime as a string.
-    Python serialized datetimes are isoformatted.
-    KSQL serialized have the Z at the end.
-    """
-    return datetime.fromisoformat(str(val).replace("Z", "+00:00"))
