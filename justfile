@@ -22,7 +22,7 @@ init-ksqldb:
 shell-person:
     docker compose run --rm person-service-web bash
 
-# shell into a person service container
+# shell into a planning service container
 shell-planning:
     docker compose run --rm planning-service-web bash
 
