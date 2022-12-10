@@ -100,15 +100,15 @@ services:
     volumes:
       - ./ksqldb/project:/project
 
-  accounting-service-web:
-    container_name: accounting-web
+  orders-service-web:
+    container_name: orders-web
     build: 
       context: .
-      dockerfile: ./accounting-service/Dockerfile
+      dockerfile: ./orders-service/Dockerfile
     env_file:
-      - ./accounting-service/.env
+      - ./orders-service/.env
     volumes:
-      - ./accounting-service:/code
+      - ./orders-service:/code
     ports:
       - "8002:8002"
     command:
@@ -127,38 +127,38 @@ services:
       interval: 10s
       retries: 5
 
-  accounting-service-cdc-consumer:
-    container_name: accounting-consumer-cdc
+  orders-service-cdc-consumer:
+    container_name: orders-consumer-cdc
     build:
       context: .
-      dockerfile: ./accounting-service/Dockerfile
+      dockerfile: ./orders-service/Dockerfile
     env_file:
-      - ./accounting-service/.env
+      - ./orders-service/.env
     command:
       [
         "./manage.py",
         "consume_events",
         "--topic",
-        "private_accounting_bal_sheet_cdc",
+        "private_orders_order_cdc",
         "--consumer_group_id",
-        "accounting-consumer-1",
+        "orders-consumer-1",
         "--handler",
-        "accounting.handlers.BalanceSheetCDCSchemaConverter"
+        "orders.handlers.OrderCDCSchemaConverter"
       ]
     depends_on:
       schema-registry:
         condition: service_healthy
     restart: always
 
-  person-service-web:
-    container_name: person-web
+  customer-service-web:
+    container_name: customer-web
     build: 
       context: .
-      dockerfile: ./person-service/Dockerfile
+      dockerfile: ./customer-service/Dockerfile
     env_file:
-      - ./person-service/.env
+      - ./customer-service/.env
     volumes:
-      - ./person-service:/code
+      - ./customer-service:/code
     ports:
       - "8001:8001"
     command:
@@ -177,15 +177,15 @@ services:
       interval: 10s
       retries: 5
 
-  planning-service-web:
-    container_name: planning-web
+  points-service-web:
+    container_name: points-web
     build: 
       context: .
-      dockerfile: ./planning-service/Dockerfile
+      dockerfile: ./points-service/Dockerfile
     env_file:
-      - ./planning-service/.env
+      - ./points-service/.env
     volumes:
-      - ./planning-service:/code
+      - ./points-service:/code
     ports:
       - "8003:8003"
     command:
@@ -204,46 +204,46 @@ services:
       interval: 10s
       retries: 5
 
-  planning-service-person-consumer:
-    container_name: planning-consumer-p
+  points-service-customer-consumer:
+    container_name: points-customer-consumer
     build: 
       context: .
-      dockerfile: ./planning-service/Dockerfile
+      dockerfile: ./points-service/Dockerfile
     env_file:
-      - ./planning-service/.env
+      - ./points-service/.env
     command:
       [
         "./manage.py",
         "consume_events",
         "--topic",
-        "public_person_entity_events",
+        "public_customer_entity_events",
         "--consumer_group_id",
-        "planning-consumer-1",
+        "points-consumer-1",
         "--handler",
-        "planning.handlers.PersonEventHandler"
+        "points.handlers.CustomerEventHandler"
       ]
     depends_on:
       schema-registry:
         condition: service_healthy
     restart: always
 
-  planning-service-balance-sheet-consumer:
-    container_name: planning-consumer-b
+  points-service-order-consumer:
+    container_name: points-order-consumer
     build: 
       context: .
-      dockerfile: ./planning-service/Dockerfile
+      dockerfile: ./points-service/Dockerfile
     env_file:
-      - ./planning-service/.env
+      - ./points-service/.env
     command:
       [
         "./manage.py",
         "consume_events",
         "--topic",
-        "public_balance_sheet_entity_events",
+        "public_order_entity_events",
         "--consumer_group_id",
-        "planning-consumer-2",
+        "points-consumer-2",
         "--handler",
-        "planning.handlers.BalanceSheetEventHandler"
+        "points.handlers.OrderEventHandler"
       ]
     depends_on:
       schema-registry:

@@ -18,17 +18,17 @@ init-services:
 init-ksqldb:
     ./ksqldb/migrate.sh
 
-# shell into a person service container
-shell-person:
-    docker compose run --rm person-service-web bash
+# shell into a customer service container
+shell-customer:
+    docker compose run --rm customer-service-web bash
 
-# shell into a planning service container
-shell-planning:
-    docker compose run --rm planning-service-web bash
+# shell into a points service container
+shell-points:
+    docker compose run --rm points-service-web bash
 
-# shell into an accounting service container
-shell-accounting:
-    docker compose run --rm accounting-service-web bash
+# shell into an orders service container
+shell-orders:
+    docker compose run --rm orders-service-web bash
 
 # psql into the postgres service container
 psql:
@@ -60,4 +60,4 @@ test:
     cd events
     pytest
     cd ..
-    sudo docker compose run --rm planning-service-web pytest
+    sudo docker compose run --rm points-service-web pytest

@@ -1,0 +1,24 @@
+{
+  "namespace": "microservices.django.kafka.poc.avro",
+  "name": "Order",
+  "type": "record",
+  "doc": "Represents an order.",
+  "fields": [
+    {
+      "name": "id",
+      "type": {"type": "string", "logicalType": "uuid"}
+    },
+    {
+      "name": "customer_id",
+      "type": {"type": "string", "logicalType": "uuid"}
+    },
+    {
+      "name": "date_placed",
+      "type": {"type": "long", "logicalType": "timestamp-millis"}
+    },
+    {
+      "name": "item_count",
+      "type": "long"
+    }
+  ]
+}

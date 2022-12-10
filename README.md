@@ -69,48 +69,41 @@ Run the `demo` script.
 
 This will:
 
-1. Create a person in the Person service, via its REST API.
-2. Create a balance-sheet for the person in the Accounting service, via its REST API.
-3. Call the `/ratios` API of the Planning service, to get financial planning ratio data for the person.
+1. Create a customer in the Cuustomer service, via its REST API.
+2. Create an order for the customer in the Orders service, via its REST API.
+3. Call the `/award` API of the Points service, to get the number of points awarded to the customer.
 
 ### Example
 ```sh
 $ ./demo.sh
 
-# create a person:
-person_id=$(curl -s -u $username:$password -H 'Accept: application/json; indent=4'\
+# create a customer:
+customer_id=$(curl -s -u $username:$password -H 'Accept: application/json; indent=4'\
     -H 'Content-Type: application/json' \
-    -d '{"first_name": "Bart", "last_name": "Simpson", "date_of_birth": "1980-02-23T00:00:00Z"}' \
-    http://localhost:8001/api/persons/ | jq -r ".id")
+    -d '{"first_name": "Bart", "last_name": "Simpson", "date_established": "1980-02-23T00:00:00Z"}' \
+    http://localhost:8001/api/customers/ | jq -r ".id")
 
-echo ${person_id}
-10cdc09d-757c-4e4f-96bc-367a7de72f70
+echo ${customer_id}
+31d71211-60b6-4e72-9b0c-e874583404c7
 
-# create a balance sheet:
+# create an order:
 curl -s -u $username:$password -H 'Accept: application/json; indent=4'\
     -H 'Content-Type: application/json' \
-    -d '{"person_id": "'$person_id'",  "assets": 3340000, "liabilities": "537300"}' \
-    http://localhost:8002/api/balance-sheets/
+    -d '{"customer_id": "'$customer_id'",  "item_count": 3340000}' \
+    http://localhost:8002/api/orders/
 {
-    "id": "8ab01372-1e2e-493a-88b6-da171b116ef2",
-    "person_id": "10cdc09d-757c-4e4f-96bc-367a7de72f70",
-    "date_calculated": "2022-12-08T04:41:29.568289Z",
-    "assets": 3340000,
-    "liabilities": 537300
+    "id": "c341cd83-5297-4208-84bc-b09494d7774c",
+    "customer_id": "31d71211-60b6-4e72-9b0c-e874583404c7",
+    "date_placed": "2022-12-10T12:02:28.673825Z",
+    "item_count": 3340000
 }
 # wait for eventual consistency...
-sleep 1
+sleep 2
 
-# get financial planning data
+# get points awarded
 curl -H 'Accept: application/json; indent=4' -u $username:$password \
-    http://localhost:8003/api/ratios/$person_id/
-[
-    {
-        "name": "Net Worth to Total Assets",
-        "result": {
-            "ratio": 0.8391317365269461,
-            "benchmark": 0.5,
-            "status": "Good"
-        }
-    }
+    http://localhost:8003/api/award/$customer_id/
+{
+    "points": 79523.80952380953
+}
 ```

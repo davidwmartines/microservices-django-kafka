@@ -1,0 +1,24 @@
+{
+  "namespace": "microservices.django.kafka.poc.avro",
+  "name": "Customer",
+  "type": "record",
+  "doc": "Represents the state of a customer entity in the system.",
+  "fields": [
+    {
+      "name": "id",
+      "type": {"type": "string", "logicalType": "uuid"}
+    },
+    {
+      "name": "first_name",
+      "type": "string"
+    },
+    {
+      "name": "last_name",
+      "type": "string"
+    },
+    {
+      "name": "date_established",
+      "type": {"type": "int", "logicalType": "date"}
+    }
+  ]
+}
