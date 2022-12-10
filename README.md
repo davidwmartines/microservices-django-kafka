@@ -17,7 +17,7 @@ The primary goal of this example is to demonstrate achieving robust eventual-con
 
 ## Architecture
 
-![Diagram](/doc/Django-Kafka-Microservices.jpg)
+![Diagram](/doc/architecture.jpg)
 
 
 ## Run
